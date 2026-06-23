@@ -203,16 +203,26 @@
     padding: 6px 0;
   }
 
-  .team-logo {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
+  .team-logo-wrap {
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    display: block;
   }
 
   .team-logo-placeholder {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--border);
     display: flex;
@@ -221,7 +231,6 @@
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--muted);
-    flex-shrink: 0;
   }
 
   .team-info {
@@ -318,6 +327,7 @@
     .team-name { font-size: 1.45rem; }
     .team-score { font-size: 2.6rem; }
     .tab { font-size: 1.25rem; }
+    .team-logo, .team-logo-wrap, .team-logo-placeholder { width: 48px; height: 48px; }
   }
 
   /* Ticker bar for additional context */
@@ -502,6 +512,22 @@ function gameCard(ev) {
   const statusClass = state === 'in' ? 'live' : state === 'post' ? 'final' : 'pre';
   const statusText  = state === 'in' ? `● ${detail}` : state === 'post' ? 'Final' : detail;
 
+  // NFL/NCAAF situation: possession, down & distance, yard line
+  const sit = comp.situation;
+  const isFootball = currentSport === 'nfl' || currentSport === 'ncaaf';
+  let situationHtml = '';
+  if (isFootball && state === 'in' && sit) {
+    const downDist = sit.downDistanceText || sit.shortDownDistanceText || '';
+    const possId   = sit.possession;
+    const possTeam = teams.find(t => t.team?.id === possId);
+    const possAbbr = possTeam?.team?.abbreviation || '';
+    const hasBall  = possAbbr ? `<span class="possession-tag">🏈 ${possAbbr}</span>` : '';
+    const redZone  = sit.isRedZone ? '<span class="redzone-tag">🔴 Red Zone</span>' : '';
+    if (downDist || hasBall) {
+      situationHtml = `<div class="situation-bar">${hasBall}${downDist ? `<span class="down-dist">${downDist}</span>` : ''}${redZone}</div>`;
+    }
+  }
+
   return `
   <div class="game-card" data-game="${ev.id}">
     <div class="card-header">
@@ -513,6 +539,7 @@ function gameCard(ev) {
       <div class="divider"></div>
       ${teamRow(home, homeScore, homeLeads, state)}
     </div>
+    ${situationHtml}
     ${ev.venue ? `<div class="card-footer">${ev.venue.fullName || ''}</div>` : ''}
   </div>`;
 }
