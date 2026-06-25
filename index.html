@@ -53,7 +53,7 @@
     letter-spacing:0.09em;text-transform:uppercase;padding:6px 0;overflow:hidden;white-space:nowrap;}
   .ticker-label{display:inline-block;background:#0085CA;color:#fff;font-size:0.72rem;
     font-weight:900;letter-spacing:0.14em;padding:0 10px;margin-right:14px;vertical-align:middle;}
-  .ticker-track{display:inline-block;animation:ticker 18s linear infinite;}
+  .ticker-track{display:inline-block;animation:ticker 75s linear infinite;}
   @keyframes ticker{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 
   /* ── TABS ── */
@@ -238,6 +238,11 @@
     font-size:clamp(1.2rem,3.5vw,2.6rem);letter-spacing:0.15em;text-transform:uppercase;
     color:rgba(255,255,255,0.9);text-align:center;
   }
+  .score-inning{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    font-size:clamp(0.8rem,1.8vw,1.2rem);letter-spacing:0.18em;text-transform:uppercase;
+    color:#e8c84a;text-align:center;margin-bottom:2px;
+  }
   .score-play-desc{
     font-family:'Barlow Condensed',sans-serif;font-weight:600;
     font-size:clamp(0.9rem,2.2vw,1.5rem);letter-spacing:0.06em;text-transform:uppercase;
@@ -297,6 +302,7 @@
     <div id="sov-logo-wrap"></div>
     <div class="score-event-type" id="sov-type">TOUCHDOWN!</div>
     <div class="score-team-name" id="sov-team"></div>
+    <div class="score-inning" id="sov-inning" style="display:none"></div>
     <div class="score-play-desc" id="sov-desc"></div>
   </div>
 </div>
@@ -517,14 +523,64 @@ async function fetchWinProb(eventId,leaguePath){
 }
 
 // Fetch last play description for scoring animation
-async function fetchLastPlay(eventId,leaguePath){
-  if(!leaguePath) return null;
+// For baseball: use the plays endpoint sorted by sequence desc, grab the most recent scoring play
+async function fetchLastPlay(eventId, leaguePath, isBaseball){
+  if(!leaguePath) return {text:'', inning:''};
   try{
-    const url=`https://sports.core.api.espn.com/v2/sports/${leaguePath}/events/${eventId}/competitions/${eventId}/plays?limit=1&sort=id:desc`;
-    const r=await fetch(url); if(!r.ok) return null;
+    // Try summary endpoint first — has richer text and inning context
+    const summaryUrl = `https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`;
+    const sr = await fetch(summaryUrl);
+    if(sr.ok){
+      const sd = await sr.json();
+      if(isBaseball){
+        // Walk plays in reverse, find the most recent scoring play
+        const plays = sd.plays || [];
+        for(let i = plays.length - 1; i >= 0; i--){
+          const p = plays[i];
+          if(p.scoringPlay || (p.text && /score|run|homer|home run|rbi/i.test(p.text))){
+            const inningHalf = p.period?.type === 'top' ? 'Top' : (p.period?.type === 'bottom' ? 'Bot' : '');
+            const inningNum  = p.period?.number || '';
+            const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
+            return { text: p.text || p.shortText || '', inning: inningStr };
+          }
+        }
+        // fallback: last play in array
+        const last = plays[plays.length - 1];
+        if(last){
+          const inningHalf = last.period?.type === 'top' ? 'Top' : (last.period?.type === 'bottom' ? 'Bot' : '');
+          const inningNum  = last.period?.number || '';
+          const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
+          return { text: last.text || last.shortText || '', inning: inningStr };
+        }
+      } else {
+        // Football — grab last drive/play text from summary
+        const plays = sd.plays || [];
+        const last  = plays[plays.length - 1];
+        if(last) return { text: last.text || last.shortText || '', inning: '' };
+      }
+    }
+    // Fallback: core plays endpoint
+    const url=`https://sports.core.api.espn.com/v2/sports/${leaguePath}/events/${eventId}/competitions/${eventId}/plays?limit=5&sort=id:desc`;
+    const r=await fetch(url); if(!r.ok) return {text:'',inning:''};
     const d=await r.json();
-    return d.items?.[0]?.text||d.items?.[0]?.description||null;
-  }catch{return null;}
+    const items = d.items || [];
+    if(isBaseball){
+      // Find first scoring play scanning from most recent
+      const scoring = items.find(p => p.scoringPlay);
+      const play    = scoring || items[0];
+      if(!play) return {text:'',inning:''};
+      const inningHalf = play.period?.type === 'top' ? 'Top' : (play.period?.type === 'bottom' ? 'Bot' : '');
+      const inningNum  = play.period?.number || '';
+      const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
+      return { text: play.text || play.shortText || '', inning: inningStr };
+    }
+    return { text: items[0]?.text || items[0]?.description || '', inning: '' };
+  }catch{ return {text:'',inning:''}; }
+}
+
+function ordinal(n){
+  const s=['th','st','nd','rd'], v=n%100;
+  return n+(s[(v-20)%10]||s[v]||s[0]);
 }
 
 // ── MAIN FETCH ────────────────────────────────────────────────────────────────
@@ -604,10 +660,10 @@ async function detectAnimations(events, sport, leaguePath){
       if(scored){
         const scoringTeam = diffH>0 ? home : away;
         const diff=diffH>0?diffH:diffA;
-        // Fetch last play for description
-        let playDesc='';
+        // Fetch last play for rich description + inning context
+        let playInfo = {text:'', inning:''};
         if(sport.football||sport.baseball){
-          playDesc=await fetchLastPlay(id,leaguePath)||'';
+          playInfo = await fetchLastPlay(id, leaguePath, sport.baseball);
         }
 
         if(sport.football){
@@ -615,10 +671,11 @@ async function detectAnimations(events, sport, leaguePath){
           if(diff===3) eventType='FIELD GOAL';
           else if(diff===2) eventType='SAFETY';
           else if(diff===6||diff===7||diff===8) eventType='TOUCHDOWN!';
-          showScoringOverlay(eventType, scoringTeam, playDesc, scoringTeam.team?.color);
+          showScoringOverlay(eventType, scoringTeam, playInfo.text, scoringTeam.team?.color, '');
         } else if(sport.baseball){
           const runsWord=diff===1?'RUN SCORES!':'RUNS SCORE!';
-          showScoringOverlay(runsWord, scoringTeam, playDesc, scoringTeam.team?.color);
+          // Pass inning separately so overlay can display it
+          showScoringOverlay(runsWord, scoringTeam, playInfo.text, scoringTeam.team?.color, playInfo.inning);
         }
       }
     }
@@ -628,11 +685,14 @@ async function detectAnimations(events, sport, leaguePath){
 }
 
 // ── SCORING OVERLAY ───────────────────────────────────────────────────────────
-function showScoringOverlay(type, team, desc, hexColor){
+function showScoringOverlay(type, team, desc, hexColor, inning){
   const overlay=document.getElementById('score-overlay');
   document.getElementById('sov-type').textContent=type;
   document.getElementById('sov-team').textContent=(team.team?.displayName||team.team?.abbreviation||'').toUpperCase();
-  document.getElementById('sov-desc').textContent=desc.toUpperCase();
+  // Show inning above description for baseball
+  const inningEl = document.getElementById('sov-inning');
+  if(inningEl){ inningEl.textContent = inning ? inning.toUpperCase() : ''; inningEl.style.display = inning ? '' : 'none'; }
+  document.getElementById('sov-desc').textContent=desc ? desc.toUpperCase() : '';
 
   // Logo
   const logoWrap=document.getElementById('sov-logo-wrap');
