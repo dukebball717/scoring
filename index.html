@@ -50,10 +50,9 @@
   /* ── TICKER ── */
   .ticker-bar{background:#0d1117;border-top:2px solid #0085CA;border-bottom:2px solid #0085CA;color:#fff;
     font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;
-    letter-spacing:0.09em;text-transform:uppercase;padding:6px 0;overflow:hidden;white-space:nowrap;}
-  .ticker-label{display:inline-block;background:#0085CA;color:#fff;font-size:0.72rem;
-    font-weight:900;letter-spacing:0.14em;padding:0 10px;margin-right:14px;vertical-align:middle;}
-  .ticker-track{display:inline-block;animation:ticker 75s linear infinite;}
+    letter-spacing:0.09em;text-transform:uppercase;padding:6px 0;overflow:hidden;white-space:nowrap;position:relative;}
+  
+  .ticker-track{display:inline-block;animation:ticker 140s linear infinite;}
   @keyframes ticker{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 
   /* ── TABS ── */
@@ -354,7 +353,6 @@
 </header>
 
 <div class="ticker-bar">
-  <span class="ticker-label">NEWS</span>
   <span class="ticker-track" id="ticker">Loading sports news...</span>
 </div>
 
@@ -391,11 +389,19 @@ const SPORTS = {
 };
 
 // Soccer sub-leagues to show simultaneously
+// World Cup 2026: ESPN uses 'soccer/FIFA.WC2026' or 'soccer/fifa.world'
+// We try multiple paths and filter out empty results
 const SOCCER_LEAGUES = [
-  {path:'soccer/usa.1',    label:'MLS'},
-  {path:'soccer/FIFA.WC',  label:'World Cup'},
-  {path:'soccer/UEFA.CL',  label:'Champions League'},
-  {path:'soccer/eng.1',    label:'EPL'},
+  {path:'soccer/usa.1',         label:'MLS'},
+  {path:'soccer/FIFA.WC2026',   label:'World Cup'},
+  {path:'soccer/fifa.world',    label:'World Cup'},
+  {path:'soccer/FIFA.WWC',      label:"Women's WC"},
+  {path:'soccer/UEFA.CL',       label:'Champions League'},
+  {path:'soccer/UEFA.EL',       label:'Europa League'},
+  {path:'soccer/eng.1',         label:'EPL'},
+  {path:'soccer/esp.1',         label:'La Liga'},
+  {path:'soccer/ger.1',         label:'Bundesliga'},
+  {path:'soccer/ita.1',         label:'Serie A'},
 ];
 
 let currentSport  = 'nfl';
@@ -439,46 +445,92 @@ document.getElementById('tabs').addEventListener('click',e=>{
 
 // ── NEWS TICKER ───────────────────────────────────────────────────────────────
 const NEWS_SOURCES = [
-  'https://site.api.espn.com/apis/site/v2/sports/news?limit=30',
-  'https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=10',
-  'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=10',
-  'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=10',
-  'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/news?limit=10',
+  'https://site.api.espn.com/apis/site/v2/sports/news?limit=40',
+  'https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=15',
+  'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/news?limit=15',
+  'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news?limit=15',
+  'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/news?limit=15',
+  'https://site.api.espn.com/apis/site/v2/sports/football/college-football/news?limit=10',
+  'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/news?limit=10',
+  'https://site.api.espn.com/apis/site/v2/sports/golf/news?limit=8',
+  'https://site.api.espn.com/apis/site/v2/sports/soccer/news?limit=10',
 ];
+
+// Junk patterns to filter out — article teasers, links, etc.
+const JUNK_PATTERNS = [
+  /https?:\/\//i,         // any URL
+  /click here/i,
+  /read more/i,
+  /subscribe/i,
+  /sign up/i,
+  /watch now/i,
+  /^\s*$/, 
+  /^[^a-zA-Z]{0,5}$/,    // mostly symbols
+  /\.com/i,
+  /espn\.com/i,
+  /\|\s*espn/i,
+];
+
+function isCleanHeadline(h){
+  if(!h || h.length < 10 || h.length > 200) return false;
+  return !JUNK_PATTERNS.some(p => p.test(h));
+}
+
+let allHeadlines = [];    // master shuffled pool
+let tickerBatchIdx = 0;   // which 20-item slice we are showing
+const BATCH_SIZE = 20;
 
 async function fetchNews(){
   const seen = new Set();
-  const all  = [];
+  const fresh = [];
   for(const url of NEWS_SOURCES){
     try{
-      const r=await fetch(url); if(!r.ok) continue;
-      const d=await r.json();
+      const r = await fetch(url); if(!r.ok) continue;
+      const d = await r.json();
       (d.articles||[]).forEach(a=>{
-        const h=(a.headline||a.title||'').trim();
-        if(h && !seen.has(h)){seen.add(h);all.push(h);}
+        const h = (a.headline||a.title||'').trim();
+        if(isCleanHeadline(h) && !seen.has(h)){seen.add(h); fresh.push(h);}
       });
     }catch{}
   }
-  if(all.length){
-    // Shuffle for freshness
-    for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
-    tickerHeadlines=all;
-    renderTicker();
+  if(fresh.length >= 5){
+    // Shuffle the full pool
+    for(let i=fresh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fresh[i],fresh[j]]=[fresh[j],fresh[i]];}
+    allHeadlines = fresh;
+    tickerBatchIdx = 0;
+    renderTickerBatch();
   }
 }
 
-function renderTicker(){
-  if(!tickerHeadlines.length) return;
-  const el=document.getElementById('ticker');
-  el.textContent='  ◆  '+tickerHeadlines.join('   ◆   ');
-  // Reset animation
-  el.style.animation='none';
+function renderTickerBatch(){
+  if(!allHeadlines.length) return;
+  const start = (tickerBatchIdx * BATCH_SIZE) % allHeadlines.length;
+  // Grab BATCH_SIZE items wrapping around the array
+  const batch = [];
+  for(let i = 0; i < BATCH_SIZE; i++){
+    batch.push(allHeadlines[(start + i) % allHeadlines.length]);
+  }
+  const el = document.getElementById('ticker');
+  el.textContent = '  ◆  ' + batch.join('   ◆   ');
+  el.style.animation = 'none';
   void el.offsetWidth;
-  el.style.animation='';
+  el.style.animation = '';
+}
+
+function renderTicker(){ renderTickerBatch(); }
+
+// Advance to next batch when current animation completes (~140s)
+function advanceTickerBatch(){
+  if(!allHeadlines.length) return;
+  tickerBatchIdx = (tickerBatchIdx + 1);
+  renderTickerBatch();
 }
 
 fetchNews();
-setInterval(fetchNews, 4*60*1000);
+// Refresh headlines every 3 min
+setInterval(fetchNews, 3*60*1000);
+// Rotate to next batch every 140s (matches ticker CSS duration)
+setInterval(advanceTickerBatch, 140*1000);
 
 // ── ODDS ──────────────────────────────────────────────────────────────────────
 async function fetchOdds(eventId,leaguePath){
@@ -522,65 +574,45 @@ async function fetchWinProb(eventId,leaguePath){
   }catch{return null;}
 }
 
-// Fetch last play description for scoring animation
-// For baseball: use the plays endpoint sorted by sequence desc, grab the most recent scoring play
+// Fetch scoring play description
 async function fetchLastPlay(eventId, leaguePath, isBaseball){
-  if(!leaguePath) return {text:'', inning:''};
+  if(!leaguePath) return {text:''};
   try{
-    // Try summary endpoint first — has richer text and inning context
+    // Use the ESPN summary endpoint — most reliable for play text
     const summaryUrl = `https://site.api.espn.com/apis/site/v2/sports/${leaguePath}/summary?event=${eventId}`;
     const sr = await fetch(summaryUrl);
     if(sr.ok){
       const sd = await sr.json();
+      const plays = sd.plays || [];
       if(isBaseball){
-        // Walk plays in reverse, find the most recent scoring play
-        const plays = sd.plays || [];
+        // Scan backwards for most recent scoring play
         for(let i = plays.length - 1; i >= 0; i--){
           const p = plays[i];
-          if(p.scoringPlay || (p.text && /score|run|homer|home run|rbi/i.test(p.text))){
-            const inningHalf = p.period?.type === 'top' ? 'Top' : (p.period?.type === 'bottom' ? 'Bot' : '');
-            const inningNum  = p.period?.number || '';
-            const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
-            return { text: p.text || p.shortText || '', inning: inningStr };
+          const txt = p.text || p.shortText || '';
+          if(p.scoringPlay === true || /home run|homer|scores|rbi|sacrifice/i.test(txt)){
+            return { text: cleanPlayText(txt) };
           }
         }
-        // fallback: last play in array
-        const last = plays[plays.length - 1];
-        if(last){
-          const inningHalf = last.period?.type === 'top' ? 'Top' : (last.period?.type === 'bottom' ? 'Bot' : '');
-          const inningNum  = last.period?.number || '';
-          const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
-          return { text: last.text || last.shortText || '', inning: inningStr };
-        }
+        // No flagged scoring play — return last play text as fallback
+        const last = plays[plays.length-1];
+        return { text: last ? cleanPlayText(last.text||last.shortText||'') : '' };
       } else {
-        // Football — grab last drive/play text from summary
-        const plays = sd.plays || [];
-        const last  = plays[plays.length - 1];
-        if(last) return { text: last.text || last.shortText || '', inning: '' };
+        // Football — last play in array
+        const last = plays[plays.length-1];
+        return { text: last ? cleanPlayText(last.text||last.shortText||'') : '' };
       }
     }
-    // Fallback: core plays endpoint
-    const url=`https://sports.core.api.espn.com/v2/sports/${leaguePath}/events/${eventId}/competitions/${eventId}/plays?limit=5&sort=id:desc`;
-    const r=await fetch(url); if(!r.ok) return {text:'',inning:''};
-    const d=await r.json();
-    const items = d.items || [];
-    if(isBaseball){
-      // Find first scoring play scanning from most recent
-      const scoring = items.find(p => p.scoringPlay);
-      const play    = scoring || items[0];
-      if(!play) return {text:'',inning:''};
-      const inningHalf = play.period?.type === 'top' ? 'Top' : (play.period?.type === 'bottom' ? 'Bot' : '');
-      const inningNum  = play.period?.number || '';
-      const inningStr  = (inningHalf && inningNum) ? `${inningHalf} ${ordinal(inningNum)}` : '';
-      return { text: play.text || play.shortText || '', inning: inningStr };
-    }
-    return { text: items[0]?.text || items[0]?.description || '', inning: '' };
-  }catch{ return {text:'',inning:''}; }
+  }catch{}
+  return {text:''};
 }
 
-function ordinal(n){
-  const s=['th','st','nd','rd'], v=n%100;
-  return n+(s[(v-20)%10]||s[v]||s[0]);
+// Strip ESPN junk from play text
+function cleanPlayText(txt){
+  if(!txt) return '';
+  // Remove anything inside parens like "(5:22)" or "(3rd & 7)"
+  txt = txt.replace(/\([^)]*\)/g, '').replace(/\s{2,}/g,' ').trim();
+  // Capitalize first letter
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
 }
 
 // ── MAIN FETCH ────────────────────────────────────────────────────────────────
@@ -589,14 +621,23 @@ async function fetchScores(){
   let allEvents=[];
 
   if(sport.multi){
-    // Soccer: fetch multiple leagues
-    const results=await Promise.allSettled(
-      SOCCER_LEAGUES.map(sl=>fetch(`https://site.api.espn.com/apis/site/v2/sports/${sl.path}/scoreboard`)
-        .then(r=>r.ok?r.json():null)
-        .then(d=>d?(d.events||[]).map(ev=>({...ev,_leagueLabel:sl.label})):[])
+    // Soccer: fetch multiple leagues, deduplicate by event id
+    const seenIds = new Set();
+    const results = await Promise.allSettled(
+      SOCCER_LEAGUES.map(sl=>
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/${sl.path}/scoreboard`)
+          .then(r=>r.ok?r.json():null)
+          .then(d=>d?(d.events||[]).map(ev=>({...ev,_leagueLabel:sl.label})):[])
+          .catch(()=>[])
       )
     );
-    results.forEach(r=>{if(r.status==='fulfilled') allEvents.push(...r.value);});
+    results.forEach(r=>{
+      if(r.status==='fulfilled'){
+        r.value.forEach(ev=>{
+          if(!seenIds.has(ev.id)){seenIds.add(ev.id);allEvents.push(ev);}
+        });
+      }
+    });
   } else {
     try{
       const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport.path}/scoreboard`);
@@ -675,7 +716,7 @@ async function detectAnimations(events, sport, leaguePath){
         } else if(sport.baseball){
           const runsWord=diff===1?'RUN SCORES!':'RUNS SCORE!';
           // Pass inning separately so overlay can display it
-          showScoringOverlay(runsWord, scoringTeam, playInfo.text, scoringTeam.team?.color, playInfo.inning);
+          showScoringOverlay(runsWord, scoringTeam, playInfo.text, scoringTeam.team?.color, '');
         }
       }
     }
@@ -691,7 +732,7 @@ function showScoringOverlay(type, team, desc, hexColor, inning){
   document.getElementById('sov-team').textContent=(team.team?.displayName||team.team?.abbreviation||'').toUpperCase();
   // Show inning above description for baseball
   const inningEl = document.getElementById('sov-inning');
-  if(inningEl){ inningEl.textContent = inning ? inning.toUpperCase() : ''; inningEl.style.display = inning ? '' : 'none'; }
+  if(inningEl){ inningEl.style.display = 'none'; }
   document.getElementById('sov-desc').textContent=desc ? desc.toUpperCase() : '';
 
   // Logo
