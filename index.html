@@ -38,11 +38,31 @@
   body.kiosk:hover #kiosk-btn{opacity:0.9;cursor:auto;}
 
   /* ── HEADER ── */
-  header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);}
-  .header-top{display:flex;justify-content:flex-end;align-items:center;gap:16px;padding:5px 20px 2px;}
-  .logo{width:100%;display:block;padding:0 8px 4px;}
+  header{
+    position:sticky;top:0;z-index:100;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    display:grid;
+    grid-template-columns:80px 1fr 80px;
+    align-items:center;
+    padding:4px 16px 4px;
+    gap:8px;
+    min-height:0;
+  }
+  .header-top{
+    grid-column:3;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:flex-end;
+    gap:2px;
+  }
+  .logo{
+    grid-column:2;
+    display:block;
+    padding:0;
+    line-height:0;
+  }
   .logo svg{width:100%;height:auto;display:block;}
-  .clock{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:var(--text);letter-spacing:0.05em;}
+  .clock{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:700;color:var(--text);letter-spacing:0.05em;line-height:1;}
   .live-dot{display:flex;align-items:center;gap:7px;font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--live);}
   .live-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--live);animation:blink 1.4s ease-in-out infinite;}
   @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
@@ -295,7 +315,7 @@
   ══════════════════════════════════════════════════════════ */
   body.kiosk main {
     padding: 4px 8px !important;
-    margin-top: 72px !important;
+    margin-top: 58px !important;
   }
   body.kiosk .section-label {
     font-size: 0.6rem;
@@ -368,8 +388,8 @@
 
   /* DANCAVE header shrinks slightly in kiosk */
   body.kiosk .logo svg text { font-size: 88px; }
-  body.kiosk header { border-bottom: 1px solid var(--border); }
-  body.kiosk .header-top { padding: 3px 16px 1px; }
+  body.kiosk header { border-bottom: 1px solid var(--border); padding: 2px 12px 2px; }
+  body.kiosk .header-top { padding: 0 16px 0; }
   body.kiosk .clock { font-size: 1.3rem; }
 
   /* TV overrides — in kiosk on large screens go even tighter */
@@ -446,7 +466,7 @@
     <div class="clock" id="clock">--:--</div>
   </div>
   <div class="logo">
-    <svg viewBox="0 0 1100 92" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 8 1100 76" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#0085CA"/>
