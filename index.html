@@ -42,27 +42,34 @@
     position:sticky;top:0;z-index:100;
     background:var(--surface);
     border-bottom:1px solid var(--border);
-    display:grid;
-    grid-template-columns:80px 1fr 80px;
+    display:flex;
+    flex-direction:row;
     align-items:center;
-    padding:4px 16px 4px;
-    gap:8px;
+    padding:2px 16px 2px 12px;
+    gap:0;
     min-height:0;
-  }
-  .header-top{
-    grid-column:3;
-    display:flex;flex-direction:column;
-    justify-content:center;align-items:flex-end;
-    gap:2px;
+    line-height:1;
   }
   .logo{
-    grid-column:2;
+    flex:1;
     display:block;
     padding:0;
     line-height:0;
+    min-width:0;
   }
   .logo svg{width:100%;height:auto;display:block;}
-  .clock{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:700;color:var(--text);letter-spacing:0.05em;line-height:1;}
+  .header-right-block{
+    flex-shrink:0;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+    white-space:nowrap;
+    padding-left:12px;
+  }
+  /* .header-top kept for kiosk override compat */
+  .header-top{ display:none; }
+  .clock{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:700;color:var(--text);letter-spacing:0.05em;line-height:1;white-space:nowrap;}
   .live-dot{display:flex;align-items:center;gap:7px;font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--live);}
   .live-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--live);animation:blink 1.4s ease-in-out infinite;}
   @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
@@ -315,7 +322,7 @@
   ══════════════════════════════════════════════════════════ */
   body.kiosk main {
     padding: 4px 8px !important;
-    margin-top: 58px !important;
+    margin-top: 52px !important;
   }
   body.kiosk .section-label {
     font-size: 0.6rem;
@@ -388,9 +395,9 @@
 
   /* DANCAVE header shrinks slightly in kiosk */
   body.kiosk .logo svg text { font-size: 88px; }
-  body.kiosk header { border-bottom: 1px solid var(--border); padding: 2px 12px 2px; }
-  body.kiosk .header-top { padding: 0 16px 0; }
-  body.kiosk .clock { font-size: 1.3rem; }
+  body.kiosk header { border-bottom: 1px solid var(--border); padding: 1px 12px 1px 8px; }
+  body.kiosk .header-right-block { padding-left: 10px; }
+  body.kiosk .clock { font-size: 1.25rem; }
 
   /* TV overrides — in kiosk on large screens go even tighter */
   @media (min-width: 1200px) {
@@ -461,12 +468,8 @@
 </div>
 
 <header>
-  <div class="header-top">
-    <div class="live-dot">Live</div>
-    <div class="clock" id="clock">--:--</div>
-  </div>
   <div class="logo">
-    <svg viewBox="0 8 1100 76" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 12 1100 72" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#0085CA"/>
@@ -479,6 +482,10 @@
         font-weight="900" font-size="100" letter-spacing="32"
         fill="url(#pg)">DANCAVE</text>
     </svg>
+  </div>
+  <div class="header-right-block">
+    <div class="live-dot">Live</div>
+    <div class="clock" id="clock">--:--</div>
   </div>
 </header>
 
@@ -546,7 +553,7 @@ let tickerIdx     = 0;
 // ── CLOCK ─────────────────────────────────────────────────────────────────────
 function updateClock(){
   document.getElementById('clock').textContent=
-    new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit',hour12:true}).replace(/ ?[AP]M$/i,'');
 }
 setInterval(updateClock,1000); updateClock();
 
