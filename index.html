@@ -289,6 +289,116 @@
     color:var(--muted);letter-spacing:0.1em;}
   .final-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:0.76rem;
     color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+
+  /* ══════════════════════════════════════════════════════════
+     KIOSK MODE — ultra-compact to fit max games on screen
+  ══════════════════════════════════════════════════════════ */
+  body.kiosk main {
+    padding: 4px 8px !important;
+    margin-top: 72px !important;
+  }
+  body.kiosk .section-label {
+    font-size: 0.6rem;
+    margin-bottom: 4px;
+    padding-left: 1px;
+  }
+  /* Pack cards tighter — smaller min-width = more columns */
+  body.kiosk .games-grid,
+  body.kiosk .loading-grid {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+  }
+  /* Card itself */
+  body.kiosk .game-card {
+    border-radius: 4px;
+    font-size: 0.72rem;
+  }
+  body.kiosk .card-header {
+    padding: 3px 7px;
+    min-height: 20px;
+  }
+  body.kiosk .game-status { font-size: 0.56rem; }
+  body.kiosk .game-network { font-size: 0.5rem; }
+
+  /* Team rows — tighten up */
+  body.kiosk .card-body { padding: 4px 7px 3px; }
+  body.kiosk .team-row { gap: 5px; padding: 2px 0; }
+  body.kiosk .team-logo-wrap,
+  body.kiosk .team-logo,
+  body.kiosk .team-logo-placeholder { width: 20px !important; height: 20px !important; }
+  body.kiosk .team-logo-placeholder { font-size: 0.42rem; }
+  body.kiosk .team-name { font-size: 0.82rem; }
+  body.kiosk .team-sub { font-size: 0.5rem; }
+  body.kiosk .team-ranking { font-size: 0.56rem; }
+  body.kiosk .team-score { font-size: 1.35rem; min-width: 26px; }
+  body.kiosk .team-odds { font-size: 0.5rem; }
+  body.kiosk .divider { margin: 2px 0; }
+
+  /* Clock row (quarter/time) */
+  body.kiosk .clock-row {
+    padding: 2px 7px 2px;
+    font-size: 0.56rem;
+  }
+
+  /* Win prob */
+  body.kiosk .win-prob-row { padding: 2px 7px 2px; }
+  body.kiosk .win-prob-labels { font-size: 0.46rem; margin-bottom: 2px; }
+  body.kiosk .win-prob-bar { height: 3px; }
+
+  /* O/U */
+  body.kiosk .ou-row { padding: 2px 7px 2px; font-size: 0.52rem; }
+
+  /* Situation (football) */
+  body.kiosk .situation-bar { padding: 3px 7px 3px; gap: 5px; }
+  body.kiosk .possession-tag { font-size: 0.54rem; padding: 1px 4px; }
+  body.kiosk .down-dist { font-size: 0.58rem; }
+  body.kiosk .redzone-badge { font-size: 0.5rem; padding: 1px 4px; }
+
+  /* Baseball */
+  body.kiosk .baseball-bar { padding: 3px 7px 4px; gap: 5px; }
+  body.kiosk .diamond-wrap svg { width: 34px; height: 34px; }
+  body.kiosk .baseball-inning { font-size: 0.56rem; }
+  body.kiosk .baseball-count { font-size: 0.5rem; }
+  body.kiosk .outs-label { font-size: 0.44rem; }
+  body.kiosk .out-dot { width: 7px; height: 7px; }
+
+  /* Footer */
+  body.kiosk .card-footer { padding: 2px 7px 3px; font-size: 0.48rem; }
+
+  /* DANCAVE header shrinks slightly in kiosk */
+  body.kiosk .logo svg text { font-size: 88px; }
+  body.kiosk header { border-bottom: 1px solid var(--border); }
+  body.kiosk .header-top { padding: 3px 16px 1px; }
+  body.kiosk .clock { font-size: 1.3rem; }
+
+  /* TV overrides — in kiosk on large screens go even tighter */
+  @media (min-width: 1200px) {
+    body.kiosk .games-grid,
+    body.kiosk .loading-grid {
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
+      gap: 5px !important;
+    }
+  }
+  @media (min-width: 1600px) {
+    body.kiosk .games-grid,
+    body.kiosk .loading-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+      gap: 5px !important;
+    }
+    body.kiosk .team-score { font-size: 1.5rem !important; }
+    body.kiosk .team-name { font-size: 0.88rem !important; }
+  }
+  @media (min-width: 2000px) {
+    body.kiosk .games-grid,
+    body.kiosk .loading-grid {
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+      gap: 6px !important;
+    }
+    body.kiosk .team-score { font-size: 1.65rem !important; }
+    body.kiosk .team-name { font-size: 0.95rem !important; }
+  }
+
 </style>
 </head>
 <body>
