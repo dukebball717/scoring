@@ -3,380 +3,406 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7th Annual Race Party — Driver Board</title>
+<title>7th Annual Race Party</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:ital,wght@0,500;0,700;1,700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --asphalt: #0b0d10;
-    --surface: #15181d;
-    --surface-2: #1c2027;
-    --hairline: #2a2f38;
-    --caution: #f5c518;
-    --flag-red: #d3242c;
-    --chrome: #d7dbe0;
-    --chrome-dim: #8b929c;
-    --chevy: #f5b400;
-    --ford: #2f8fd6;
-    --toyota: #e33b3b;
-    --wood: #b98b4e;
+    --asphalt:#0b0d10;
+    --surface:#151a22;
+    --surface-2:#1b212b;
+    --hairline:#2c3340;
+    --gold:#f5c518;
+    --gold-soft:rgba(245,197,24,0.35);
+    --chrome:#e7eaee;
+    --chrome-dim:#93a0ad;
+    --chevy:#f5b400;
+    --ford:#2f8fd6;
+    --toyota:#e33b3b;
   }
 
   *{box-sizing:border-box;}
+  html,body{height:100%; margin:0; overflow:hidden;}
 
   body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at top, #171a1f 0%, var(--asphalt) 55%),
-      repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 6px);
+    background:radial-gradient(ellipse at top, #171d26 0%, var(--asphalt) 60%);
     color:var(--chrome);
     font-family:'Inter', sans-serif;
-    min-height:100vh;
-    padding-bottom:60px;
   }
 
-  .checker{
-    height:14px;
-    background-image:
-      linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%),
-      linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%);
-    background-color:#eee;
-    background-size:14px 14px;
-    background-position:0 0, 7px 7px;
-  }
-
-  header{
-    max-width:1200px;
-    margin:0 auto;
-    padding:36px 24px 20px;
-    text-align:center;
-  }
-
-  .eyebrow{
-    font-family:'Share Tech Mono', monospace;
-    letter-spacing:.35em;
-    font-size:12px;
-    color:var(--caution);
-    text-transform:uppercase;
-    margin-bottom:10px;
-  }
-
-  h1{
-    font-family:'Oswald', sans-serif;
-    font-weight:700;
-    text-transform:uppercase;
-    font-size:clamp(28px, 5vw, 52px);
-    letter-spacing:.03em;
-    margin:0;
-    color:#fff;
-    text-shadow:0 0 24px rgba(245,197,24,0.15);
-  }
-
-  h1 span{color:var(--flag-red);}
-
-  .subhead{
-    margin-top:10px;
-    color:var(--chrome-dim);
-    font-size:14px;
-    font-family:'Share Tech Mono', monospace;
-    letter-spacing:.08em;
-  }
-
-  main{
-    max-width:1200px;
-    margin:0 auto;
-    padding:24px;
-    display:grid;
-    grid-template-columns:repeat(5, 1fr);
-    gap:16px;
-  }
-
-  @media (max-width: 1100px){ main{ grid-template-columns:repeat(2, 1fr); } }
-  @media (max-width: 640px){ main{ grid-template-columns:1fr; padding:16px; } }
-
-  .pool{
-    background:var(--surface);
-    border:1px solid var(--hairline);
-    border-radius:6px;
-    overflow:hidden;
+  .page{
+    height:100vh;
+    width:100vw;
     display:flex;
     flex-direction:column;
+    padding:3.2vh 1.4vw 1.2vh;
   }
 
-  .pool-head{
-    background:var(--surface-2);
-    border-bottom:2px solid var(--caution);
-    padding:12px 14px;
+  /* ---------- HEADER ---------- */
+  .topbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:8px;
+    gap:2vw;
+    flex:0 0 auto;
+    margin-bottom:1.2vh;
+  }
+
+  .logo-slot{
+    flex:0 0 auto;
+    height:9vh;
+    width:16vw;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .logo-slot.has-logo{
+    background:#fff;
+    border-radius:10px;
+    padding:.7vh .9vw;
+    box-shadow:0 0 1.6vh rgba(245,197,24,0.25);
+  }
+  .logo-slot img{ max-height:100%; max-width:100%; object-fit:contain; display:block; }
+  .logo-fallback{
+    display:flex;
+    align-items:center;
+    gap:.6vw;
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    font-size:1.35vh;
+    color:var(--gold);
+    border:1.5px solid var(--gold-soft);
+    background:linear-gradient(180deg, rgba(245,197,24,0.08), transparent);
+    border-radius:8px;
+    padding:1vh 1.1vw;
+    text-align:left;
+    line-height:1.25;
+    box-shadow:0 0 1.5vh rgba(245,197,24,0.12) inset;
+  }
+  .logo-fallback .lf-icon{ width:2.6vh; height:1.8vh; flex:0 0 auto; }
+
+  h1{
+    flex:1;
+    text-align:center;
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    font-size:5.4vh;
+    margin:0;
+    color:#fff;
+    text-shadow:0 0 3vh rgba(245,197,24,.25);
+  }
+  h1 span{ color:var(--gold); }
+
+  /* ---------- CHECKERED DIVIDER STRIPS ---------- */
+  .checker-strip{
+    flex:0 0 auto;
+    height:1vh;
+    background-image:
+      linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%),
+      linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%);
+    background-color:#eee;
+    background-size:1.6vh 1.6vh;
+    background-position:0 0, .8vh .8vh;
+    margin-bottom:1.2vh;
+    border-radius:2px;
+  }
+
+  /* ---------- BOARD ---------- */
+  main{
+    flex:1 1 auto;
+    min-height:0;
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    grid-template-rows:repeat(2, 1fr);
+    gap:1vh 0.8vw;
+  }
+
+  .pool{
+    position:relative;
+    min-height:0;
+    background:var(--surface);
+    border:1px solid var(--hairline);
+    border-radius:6px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 0 0 1px rgba(245,197,24,0.06), 0 0 1.6vh rgba(245,197,24,0.08);
+  }
+
+  /* golden broadcast sheen sweeping through each box, staggered */
+  .pool::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(100deg,
+      transparent 0%,
+      rgba(245,197,24,0.28) 48%,
+      transparent 62%);
+    transform:translateX(-130%);
+    animation:sheen 5.5s ease-in-out infinite;
+    animation-delay:calc(var(--i, 0) * 0.4s);
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+  @keyframes sheen{
+    0%   { transform:translateX(-130%); }
+    35%  { transform:translateX(150%); }
+    100% { transform:translateX(150%); }
+  }
+
+  .pool-head{
+    flex:0 0 auto;
+    background:var(--surface-2);
+    border-bottom:2px solid var(--gold);
+    padding:.9vh .8vw;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.5vw;
+    position:relative;
+    z-index:1;
   }
 
   .pool-name{
     font-family:'Oswald', sans-serif;
-    font-weight:600;
+    font-weight:700;
     text-transform:uppercase;
-    letter-spacing:.05em;
-    font-size:17px;
+    letter-spacing:.03em;
+    font-size:min(4.8vh, 2.8vw);
     color:#fff;
+    line-height:1.05;
   }
 
   .flag-badge{
     display:flex;
     align-items:center;
-    gap:5px;
-    font-family:'Share Tech Mono', monospace;
-    font-size:12px;
-    color:var(--caution);
+    gap:.5vw;
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    font-size:min(2.6vh, 1.6vw);
+    color:var(--gold);
+    flex:0 0 auto;
   }
 
-  .flag-icon{ width:16px; height:12px; display:block; }
+  .flag-icon{
+    width:min(5vh, 3.2vw);
+    height:min(3.3vh, 2.1vw);
+    flex:0 0 auto;
+    display:block;
+  }
+  .flag-icon svg{
+    width:100%;
+    height:100%;
+    display:block;
+    animation:wave 2.3s ease-in-out infinite;
+    animation-delay:calc(var(--fi, 0) * 0.2s);
+    transform-origin:2px center;
+  }
+  @keyframes wave{
+    0%, 100% { transform:skewY(0deg); }
+    50%      { transform:skewY(8deg); }
+  }
 
   .drivers{
-    display:flex;
-    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+    display:grid;
+    grid-template-rows:repeat(3, 1fr);
+    position:relative;
+    z-index:1;
   }
 
   .driver{
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:10px 14px;
+    gap:.6vw;
+    padding:0 .7vw;
     border-top:1px solid var(--hairline);
+    min-width:0;
   }
 
   .roundel{
     flex:0 0 auto;
-    width:34px;
-    height:34px;
+    width:min(4.9vh, 3.6vw);
+    height:min(4.9vh, 3.6vw);
     border-radius:50%;
     background:#fff;
-    border:3px solid var(--num-color, var(--chrome-dim));
+    border:min(.5vh,.36vw) solid var(--num-color, var(--chrome-dim));
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:'Oswald', sans-serif;
     font-weight:700;
-    font-size:13px;
+    font-style:italic;
+    font-size:min(2.3vh, 1.7vw);
     color:#111;
   }
 
-  .headshot-wrap{
-    flex:0 0 auto;
-    width:38px;
-    height:38px;
-    border-radius:50%;
-    overflow:hidden;
-    background:var(--surface-2);
-    border:1px solid var(--hairline);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'Oswald', sans-serif;
-    font-size:13px;
-    font-weight:600;
-    color:var(--chrome-dim);
-  }
-
-  .headshot-wrap img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    opacity:0;
-    transition:opacity .35s ease;
-  }
-
-  .headshot-wrap img.loaded{ opacity:1; }
-
-  .driver-info{
-    display:flex;
-    flex-direction:column;
-    line-height:1.25;
-    min-width:0;
-  }
-
   .driver-name{
-    font-weight:600;
-    font-size:14px;
+    flex:1 1 auto;
+    min-width:0;
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    font-size:min(4.4vh, 2.6vw);
     color:#fff;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
-
-  .driver-team{
-    font-size:11px;
-    color:var(--chrome-dim);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  footer{
-    max-width:1200px;
-    margin:30px auto 0;
-    padding:0 24px;
-    text-align:center;
-    color:var(--chrome-dim);
-    font-family:'Share Tech Mono', monospace;
-    font-size:11px;
-    letter-spacing:.05em;
-  }
 </style>
 </head>
 <body>
 
-<div class="checker"></div>
+<!-- shared SVG assets: checker pattern + waving flag shape -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <pattern id="checkerPattern" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#ffffff"/>
+      <rect width="2" height="2" fill="#111111"/>
+      <rect x="2" y="2" width="2" height="2" fill="#111111"/>
+    </pattern>
+    <symbol id="flagShape" viewBox="0 0 24 16">
+      <line x1="1.2" y1="0" x2="1.2" y2="16" stroke="#555" stroke-width="1"/>
+      <path d="M2,2 L19,2 Q21.5,4 19,6 Q16.5,8 19,10 Q21.5,12 19,14 L2,14 Z"
+            fill="url(#checkerPattern)" stroke="#111" stroke-width="0.6"/>
+    </symbol>
+  </defs>
+</svg>
 
-<header>
-  <div class="eyebrow">Pit Board · Driver Draft</div>
-  <h1>7<span>th</span> Annual Race Party</h1>
-  <div class="subhead">EACH POOL SHOWS THE DRIVERS DRAFTED · CAR NUMBER COLORED BY MANUFACTURER</div>
-</header>
+<div class="page">
 
-<main id="board"></main>
+  <div class="topbar">
+    <div class="logo-slot" id="logo-nascar">
+      <div class="logo-fallback">
+        <svg class="lf-icon" viewBox="0 0 24 16"><use href="#flagShape"/></svg>
+        NASCAR<br>logo
+      </div>
+    </div>
 
-<footer>Chevrolet · Ford · Toyota &nbsp;—&nbsp; headshots loaded live from Wikipedia</footer>
+    <h1>7<span>th</span> Annual Race Party</h1>
 
-<div class="checker"></div>
+    <div class="logo-slot" id="logo-event">
+      <div class="logo-fallback">
+        <svg class="lf-icon" viewBox="0 0 24 16"><use href="#flagShape"/></svg>
+        Coke Zero Sugar<br>400 logo
+      </div>
+    </div>
+  </div>
+
+  <div class="checker-strip"></div>
+
+  <main id="board"></main>
+
+</div>
 
 <script>
 // ---- DATA -------------------------------------------------------
-// Edit this array to update pools/drivers for next year's party.
-// mfg: 'chevy' | 'ford' | 'toyota'  (controls the roundel color)
+// short = last-name label shown on the board (Shane van Gisbergen -> SVG)
 const pools = [
   { owner:"Pam", flags:4, drivers:[
-    {num:23, name:"Bubba Wallace", team:"23XI Racing", mfg:"toyota"},
-    {num:54, name:"Ty Gibbs", team:"Joe Gibbs Racing", mfg:"toyota"},
-    {num:2,  name:"Austin Cindric", team:"Team Penske", mfg:"ford"},
+    {num:23, short:"Wallace", mfg:"toyota"},
+    {num:54, short:"Gibbs", mfg:"toyota"},
+    {num:2,  short:"Cindric", mfg:"ford"},
   ]},
   { owner:"Ron", flags:4, drivers:[
-    {num:5,  name:"Kyle Larson", team:"Hendrick Motorsports", mfg:"chevy"},
-    {num:88, name:"Connor Zilisch", team:"Trackhouse Racing", mfg:"chevy"},
-    {num:71, name:"Michael McDowell", team:"Spire Motorsports", mfg:"chevy"},
+    {num:5,  short:"Larson", mfg:"chevy"},
+    {num:88, short:"Zilisch", mfg:"chevy"},
+    {num:71, short:"McDowell", mfg:"chevy"},
   ]},
   { owner:"Scott", flags:4, drivers:[
-    {num:12, name:"Ryan Blaney", team:"Team Penske", mfg:"ford"},
-    {num:17, name:"Chris Buescher", team:"RFK Racing", mfg:"ford"},
-    {num:60, name:"Ryan Preece", team:"RFK Racing", mfg:"ford"},
+    {num:12, short:"Blaney", mfg:"ford"},
+    {num:17, short:"Buescher", mfg:"ford"},
+    {num:60, short:"Preece", mfg:"ford"},
   ]},
   { owner:"Nick", flags:4, drivers:[
-    {num:45, name:"Tyler Reddick", team:"23XI Racing", mfg:"toyota"},
-    {num:6,  name:"Brad Keselowski", team:"RFK Racing", mfg:"ford"},
-    {num:4,  name:"Noah Gragson", team:"Front Row Motorsports", mfg:"ford"},
+    {num:45, short:"Reddick", mfg:"toyota"},
+    {num:6,  short:"Keselowski", mfg:"ford"},
+    {num:4,  short:"Gragson", mfg:"ford"},
   ]},
   { owner:"Zach", flags:3, drivers:[
-    {num:9,  name:"Chase Elliott", team:"Hendrick Motorsports", mfg:"chevy"},
-    {num:77, name:"Carson Hocevar", team:"Spire Motorsports", mfg:"chevy"},
-    {num:67, name:"Corey Heim", team:"23XI Racing", mfg:"toyota"},
+    {num:9,  short:"Elliott", mfg:"chevy"},
+    {num:77, short:"Hocevar", mfg:"chevy"},
+    {num:67, short:"Heim", mfg:"toyota"},
   ]},
   { owner:"Ace", flags:2, drivers:[
-    {num:11, name:"Denny Hamlin", team:"Joe Gibbs Racing", mfg:"toyota"},
-    {num:48, name:"Alex Bowman", team:"Hendrick Motorsports", mfg:"chevy"},
-    {num:43, name:"Erik Jones", team:"Legacy Motor Club", mfg:"toyota"},
+    {num:11, short:"Hamlin", mfg:"toyota"},
+    {num:48, short:"Bowman", mfg:"chevy"},
+    {num:43, short:"Jones", mfg:"toyota"},
   ]},
   { owner:"Nicole", flags:2, drivers:[
-    {num:24, name:"William Byron", team:"Hendrick Motorsports", mfg:"chevy"},
-    {num:1,  name:"Ross Chastain", team:"Trackhouse Racing", mfg:"chevy"},
-    {num:7,  name:"Daniel Suárez", team:"Spire Motorsports", mfg:"chevy"},
+    {num:24, short:"Byron", mfg:"chevy"},
+    {num:1,  short:"Chastain", mfg:"chevy"},
+    {num:7,  short:"Suárez", mfg:"chevy"},
   ]},
   { owner:"Daniel", flags:1, drivers:[
-    {num:19, name:"Chase Briscoe", team:"Joe Gibbs Racing", mfg:"toyota"},
-    {num:3,  name:"Austin Dillon", team:"Richard Childress Racing", mfg:"chevy"},
-    {num:38, name:"Zane Smith", team:"Front Row Motorsports", mfg:"ford"},
+    {num:19, short:"Briscoe", mfg:"toyota"},
+    {num:3,  short:"Dillon", mfg:"chevy"},
+    {num:38, short:"Smith", mfg:"ford"},
   ]},
   { owner:"KO3", flags:1, drivers:[
-    {num:22, name:"Joey Logano", team:"Team Penske", mfg:"ford"},
-    {num:97, name:"Shane van Gisbergen", team:"Trackhouse Racing", mfg:"chevy"},
-    {num:34, name:"Todd Gilliland", team:"Front Row Motorsports", mfg:"ford"},
+    {num:22, short:"Logano", mfg:"ford"},
+    {num:97, short:"SVG", mfg:"chevy"},
+    {num:34, short:"Gilliland", mfg:"ford"},
   ]},
   { owner:"Brenda", flags:0, drivers:[
-    {num:20, name:"Christopher Bell", team:"Joe Gibbs Racing", mfg:"toyota"},
-    {num:47, name:"Stenhouse Jr.", team:"Hyak Motorsports", mfg:"chevy"},
-    {num:21, name:"Josh Berry", team:"Wood Brothers Racing", mfg:"ford"},
+    {num:20, short:"Bell", mfg:"toyota"},
+    {num:47, short:"Stenhouse", mfg:"chevy"},
+    {num:21, short:"Berry", mfg:"ford"},
   ]},
 ];
 
 const mfgColor = { chevy:"var(--chevy)", ford:"var(--ford)", toyota:"var(--toyota)" };
 
-function initials(name){
-  return name.split(" ").filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase();
-}
-
-function flagIconSVG(){
-  return `<svg class="flag-icon" viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg">
-    <rect width="16" height="12" fill="#fff"/>
-    <g fill="#111">
-      <rect x="0" y="0" width="4" height="4"/><rect x="8" y="0" width="4" height="4"/>
-      <rect x="4" y="4" width="4" height="4"/><rect x="12" y="4" width="4" height="4"/>
-      <rect x="0" y="8" width="4" height="4"/><rect x="8" y="8" width="4" height="4"/>
-    </g>
-  </svg>`;
+function flagIconHTML(delayIndex){
+  return `<span class="flag-icon" style="--fi:${delayIndex}"><svg viewBox="0 0 24 16"><use href="#flagShape"/></svg></span>`;
 }
 
 function render(){
   const board = document.getElementById("board");
-  board.innerHTML = pools.map(pool => `
-    <section class="pool">
+  board.innerHTML = pools.map((pool, i) => `
+    <section class="pool" style="--i:${i}">
       <div class="pool-head">
         <div class="pool-name">${pool.owner}</div>
-        ${pool.flags > 0 ? `<div class="flag-badge">${flagIconSVG()}×${pool.flags}</div>` : ""}
+        ${pool.flags > 0 ? `<div class="flag-badge">${flagIconHTML(i)}&times;${pool.flags}</div>` : ""}
       </div>
       <div class="drivers">
         ${pool.drivers.map(d => `
           <div class="driver">
             <div class="roundel" style="--num-color:${mfgColor[d.mfg]}">${d.num}</div>
-            <div class="headshot-wrap" data-name="${d.name}">${initials(d.name)}</div>
-            <div class="driver-info">
-              <div class="driver-name">${d.name}</div>
-              <div class="driver-team">${d.team}</div>
-            </div>
+            <div class="driver-name">${d.short}</div>
           </div>
         `).join("")}
       </div>
     </section>
   `).join("");
-
-  loadHeadshots();
-}
-
-// ---- LIVE HEADSHOT LOOKUP (Wikipedia REST API, no API key needed) ----
-const cache = {};
-async function fetchHeadshot(name){
-  if (cache[name] !== undefined) return cache[name];
-  try {
-    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
-    if (!res.ok) throw new Error("not found");
-    const data = await res.json();
-    const url = data.thumbnail && data.thumbnail.source ? data.thumbnail.source : null;
-    cache[name] = url;
-    return url;
-  } catch (e) {
-    cache[name] = null;
-    return null;
-  }
-}
-
-async function loadHeadshots(){
-  const wraps = document.querySelectorAll(".headshot-wrap");
-  for (const wrap of wraps) {
-    const name = wrap.dataset.name;
-    const url = await fetchHeadshot(name);
-    if (url) {
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = name;
-      img.onload = () => img.classList.add("loaded");
-      wrap.textContent = "";
-      wrap.appendChild(img);
-    }
-    // if no image found, initials placeholder stays as-is
-  }
 }
 
 render();
+
+// ---- LOGO LOADING -------------------------------------------------
+// Loads both logos directly from Wikimedia Commons — nothing else to
+// upload. If a link ever breaks, it falls back to the gold placeholder
+// badge already in the HTML.
+function tryLogo(slotId, path){
+  const slot = document.getElementById(slotId);
+  const img = new Image();
+  img.onload = () => {
+    slot.innerHTML = "";
+    slot.appendChild(img);
+    slot.classList.add("has-logo");
+  };
+  img.onerror = () => {}; // keep fallback badge
+  img.src = path;
+}
+tryLogo("logo-nascar", "https://upload.wikimedia.org/wikipedia/commons/c/cf/NASCAR.svg");
+tryLogo("logo-event", "https://upload.wikimedia.org/wikipedia/fr/d/dc/Daytona_International_Speedway_logo.svg");
 </script>
 
 </body>
