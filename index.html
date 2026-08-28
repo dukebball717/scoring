@@ -1,666 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7th Annual Race Party - Coke Zero Sugar 400</title>
-  <style>
-    @property --angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7th Annual Race Party — Driver Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --asphalt: #0b0d10;
+    --surface: #15181d;
+    --surface-2: #1c2027;
+    --hairline: #2a2f38;
+    --caution: #f5c518;
+    --flag-red: #d3242c;
+    --chrome: #d7dbe0;
+    --chrome-dim: #8b929c;
+    --chevy: #f5b400;
+    --ford: #2f8fd6;
+    --toyota: #e33b3b;
+    --wood: #b98b4e;
+  }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  *{box-sizing:border-box;}
 
-    body {
-      background-color: #060709;
-      color: #ffffff;
-      font-family: 'Impact', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      padding: 0.8vh 0.8vw;
-      position: relative;
-    }
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, #171a1f 0%, var(--asphalt) 55%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 6px);
+    color:var(--chrome);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
 
-    /* BROADCAST BACKGROUND TEXTURE & AMBIENT LIGHT MOTION */
-    body::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: 
-        radial-gradient(ellipse at 50% 20%, rgba(230, 0, 18, 0.12) 0%, transparent 60%),
-        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 10px);
-      pointer-events: none;
-      z-index: 0;
-    }
+  .checker{
+    height:14px;
+    background-image:
+      linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%),
+      linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%);
+    background-color:#eee;
+    background-size:14px 14px;
+    background-position:0 0, 7px 7px;
+  }
 
-    body::after {
-      content: '';
-      position: absolute;
-      top: -50vh;
-      left: -50vw;
-      width: 200vw;
-      height: 200vh;
-      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
-      animation: ambientMotion 20s ease-in-out infinite alternate;
-      pointer-events: none;
-      z-index: 0;
-    }
+  header{
+    max-width:1200px;
+    margin:0 auto;
+    padding:36px 24px 20px;
+    text-align:center;
+  }
 
-    @keyframes ambientMotion {
-      0% { transform: translate(-5%, -5%) scale(1); }
-      100% { transform: translate(5%, 5%) scale(1.05); }
-    }
+  .eyebrow{
+    font-family:'Share Tech Mono', monospace;
+    letter-spacing:.35em;
+    font-size:12px;
+    color:var(--caution);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
 
-    /* BROADCAST ACCENT SWEEP LINE */
-    .broadcast-scanline {
-      position: absolute;
-      left: 0;
-      top: -10px;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255, 183, 3, 0) 15%, 
-        rgba(255, 255, 255, 0.85) 50%, 
-        rgba(255, 183, 3, 0) 85%, 
-        transparent 100%
-      );
-      box-shadow: 0 0 12px rgba(255, 183, 3, 0.5);
-      opacity: 0;
-      animation: broadcastSweep 13s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      pointer-events: none;
-      z-index: 99;
-    }
+  h1{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:clamp(28px, 5vw, 52px);
+    letter-spacing:.03em;
+    margin:0;
+    color:#fff;
+    text-shadow:0 0 24px rgba(245,197,24,0.15);
+  }
 
-    @keyframes broadcastSweep {
-      0%, 82% { top: -10px; opacity: 0; }
-      84% { opacity: 0.7; }
-      93% { top: 105vh; opacity: 0.7; }
-      95%, 100% { top: 105vh; opacity: 0; }
-    }
+  h1 span{color:var(--flag-red);}
 
-    /* HEADER */
-    header {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 10vh;
-      flex-shrink: 0;
-      background: linear-gradient(180deg, #180003 0%, #060709 100%);
-      border-bottom: 3px solid #e60012;
-      border-radius: 8px;
-      margin-bottom: 0.8vh;
-      padding: 0 1.5vw;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    }
+  .subhead{
+    margin-top:10px;
+    color:var(--chrome-dim);
+    font-size:14px;
+    font-family:'Share Tech Mono', monospace;
+    letter-spacing:.08em;
+  }
 
-    .header-left {
-      width: 45%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100%;
-    }
+  main{
+    max-width:1200px;
+    margin:0 auto;
+    padding:24px;
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:16px;
+  }
 
-    /* TV-BULLETPROOF NASCAR HTML/CSS LOGO */
-    .nascar-bar-logo {
-      display: flex;
-      align-items: center;
-      height: 6.5vh;
-      transform: skewX(-15deg);
-      gap: 4px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 4px;
-      padding-right: 2px;
-    }
+  @media (max-width: 1100px){ main{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width: 640px){ main{ grid-template-columns:1fr; padding:16px; } }
 
-    .nascar-bar-logo .bar {
-      height: 100%;
-      border-radius: 2px;
-    }
+  .pool{
+    background:var(--surface);
+    border:1px solid var(--hairline);
+    border-radius:6px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
 
-    .nascar-bar-logo .bar-red { width: 1.2vw; background-color: #E60012; }
-    .nascar-bar-logo .bar-yellow { width: 1.2vw; background-color: #FFB703; }
-    .nascar-bar-logo .bar-blue { width: 1.2vw; background-color: #0051BA; }
-    
-    .nascar-bar-logo .bar-black {
-      background-color: #000000;
-      padding: 0 1.5vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      border: 1px solid #222;
-      border-radius: 2px;
-    }
+  .pool-head{
+    background:var(--surface-2);
+    border-bottom:2px solid var(--caution);
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
 
-    .nascar-bar-logo .bar-black span {
-      color: #ffffff;
-      font-family: 'Impact', 'Arial Black', sans-serif;
-      font-size: min(4.5vh, 2.8vw);
-      font-style: italic;
-      font-weight: 900;
-      letter-spacing: 4px;
-      line-height: 1;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    }
+  .pool-name{
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    font-size:17px;
+    color:#fff;
+  }
 
-    /* NASCAR LOGO LIGHT SWEEP */
-    .nascar-bar-logo::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -150%;
-      width: 60%;
-      height: 200%;
-      background: linear-gradient(
-        115deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0) 35%,
-        rgba(255, 255, 255, 0.55) 50%,
-        rgba(255, 255, 255, 0) 65%,
-        transparent 100%
-      );
-      transform: rotate(15deg);
-      animation: logoSweep 10s ease-in-out infinite;
-      pointer-events: none;
-    }
+  .flag-badge{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-family:'Share Tech Mono', monospace;
+    font-size:12px;
+    color:var(--caution);
+  }
 
-    @keyframes logoSweep {
-      0%, 78% { left: -150%; }
-      90%, 100% { left: 200%; }
-    }
+  .flag-icon{ width:16px; height:12px; display:block; }
 
-    .header-right {
-      width: 55%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      height: 100%;
-    }
+  .drivers{
+    display:flex;
+    flex-direction:column;
+  }
 
-    .party-title {
-      color: #ffb703;
-      font-size: min(4.2vh, 3vw);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px 6px #000;
-      line-height: 1;
-      text-align: right;
-      display: flex;
-      align-items: center;
-      gap: 0.5vw;
-    }
+  .driver{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    border-top:1px solid var(--hairline);
+  }
 
-    /* SUBTLE MOVING CHECKERED FLAGS */
-    .animated-flag {
-      display: inline-block;
-      animation: flagWiggle 4s ease-in-out infinite alternate;
-      transform-origin: bottom center;
-    }
+  .roundel{
+    flex:0 0 auto;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#fff;
+    border:3px solid var(--num-color, var(--chrome-dim));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color:#111;
+  }
 
-    .animated-flag.right {
-      animation-delay: 2s;
-    }
+  .headshot-wrap{
+    flex:0 0 auto;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    overflow:hidden;
+    background:var(--surface-2);
+    border:1px solid var(--hairline);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Oswald', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--chrome-dim);
+  }
 
-    @keyframes flagWiggle {
-      0% { transform: rotate(-6deg); }
-      50% { transform: rotate(0deg); }
-      100% { transform: rotate(6deg); }
-    }
+  .headshot-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    opacity:0;
+    transition:opacity .35s ease;
+  }
 
-    /* GRID LAYOUT (5 Columns x 2 Rows) */
-    .grid {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 0.5vw;
-      height: 87vh;
-      width: 100%;
-    }
+  .headshot-wrap img.loaded{ opacity:1; }
 
-    /* CARD STYLING & TV FALLBACK BORDER */
-    .card {
-      position: relative;
-      background: #0f1115;
-      border: 2px solid #ffb703; /* Solid fallback for TV browsers */
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.8);
-      transition: transform 0.3s ease;
-    }
+  .driver-info{
+    display:flex;
+    flex-direction:column;
+    line-height:1.25;
+    min-width:0;
+  }
 
-    /* Animated Gold Border Overlay */
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 8px;
-      padding: 2px;
-      background: conic-gradient(
-        from var(--angle),
-        #ffb703 0%,
-        #fff3a1 8%,
-        #ffb703 16%,
-        #3d2c00 45%,
-        #ffb703 80%,
-        #fff3a1 88%,
-        #ffb703 100%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      animation: borderRotate 12s linear infinite;
-      pointer-events: none;
-      z-index: 2;
-    }
+  .driver-name{
+    font-weight:600;
+    font-size:14px;
+    color:#fff;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 
-    .card:nth-child(2n)::before { animation-delay: -2.5s; }
-    .card:nth-child(3n)::before { animation-delay: -5s; }
-    .card:nth-child(4n)::before { animation-delay: -7.5s; }
-    .card:nth-child(5n)::before { animation-delay: -10s; }
+  .driver-team{
+    font-size:11px;
+    color:var(--chrome-dim);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 
-    @keyframes borderRotate {
-      to { --angle: 360deg; }
-    }
-
-    /* PARTICIPANT HEADERS */
-    .card-header {
-      background: linear-gradient(180deg, #332600 0%, #171100 100%);
-      border-bottom: 2px solid #ffb703;
-      padding: 0.4vh 0.2vw;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 15%;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-header h2 {
-      color: #ffffff;
-      font-size: min(3.4vh, 2vw);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 2px 2px 4px #000;
-      white-space: nowrap;
-      width: 100%;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4vw;
-    }
-
-    .flag-info {
-      font-size: 0.7em;
-      color: #ffb703;
-      vertical-align: middle;
-    }
-
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
-      padding: 0.5vh 0.3vw;
-      gap: 0.4vh;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* OPTIMIZED DRIVER ROW (NO TRUNCATION) */
-    .driver-row {
-      display: flex;
-      align-items: center;
-      background: #16191e;
-      border-left: 4px solid #ffb703;
-      border-radius: 5px;
-      padding: 0 0.4vw;
-      height: 31%;
-      gap: 0.4vw;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    /* NUMBERS OPTIMIZED FOR SCREEN REAL ESTATE */
-    .num {
-      font-style: italic;
-      font-weight: 900;
-      font-size: min(4.2vh, 2vw);
-      line-height: 1;
-      min-width: 1.8em;
-      text-align: center;
-      transform: skewX(-10deg);
-      flex-shrink: 0;
-    }
-
-    /* Custom Official Driver Number Colors */
-    .n-23 { color: #ffffff; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-54 { color: #99cc00; text-shadow: 2px 2px 0 #000, -1px -1px 0 #fff; }
-    .n-2  { color: #ffeb3b; text-shadow: 2px 2px 0 #000, -1px -1px 0 #e60012; }
-    .n-5  { color: #fff200; text-shadow: 2px 2px 0 #0051ba, -1px -1px 0 #000; }
-    .n-88 { color: #00e5ff; text-shadow: 2px 2px 0 #000; }
-    .n-71 { color: #ff6600; text-shadow: 2px 2px 0 #000; }
-    .n-12 { color: #ffeb3b; text-shadow: 2px 2px 0 #000, -2px -2px 0 #000; }
-    .n-17 { color: #e60012; text-shadow: 2px 2px 0 #fff, -1px -1px 0 #000; }
-    .n-60 { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-45 { color: #ffffff; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-6  { color: #0051ba; text-shadow: 2px 2px 0 #fff; }
-    .n-4  { color: #e60012; text-shadow: 2px 2px 0 #000; }
-    .n-9  { color: #ffeb3b; text-shadow: 2px 2px 0 #003399, -1px -1px 0 #000; }
-    .n-77 { color: #ff6600; text-shadow: 2px 2px 0 #fff; }
-    .n-67 { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-11 { color: #ff6600; text-shadow: 2px 2px 0 #4b0082, -1px -1px 0 #000; }
-    .n-48 { color: #e20074; text-shadow: 2px 2px 0 #00d2ff; }
-    .n-43 { color: #00aef0; text-shadow: 2px 2px 0 #ffeb3b; }
-    .n-24 { color: #ffcc00; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-1  { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-7  { color: #00aef0; text-shadow: 2px 2px 0 #000; }
-    .n-19 { color: #ff6600; text-shadow: 2px 2px 0 #000; }
-    .n-3  { color: #ffffff; text-shadow: 3px 3px 0 #cc0000, -1px -1px 0 #000; }
-    .n-38 { color: #ffeb3b; text-shadow: 2px 2px 0 #e60012; }
-    .n-22 { color: #ffcc00; text-shadow: 2px 2px 0 #cc0000, -1px -1px 0 #000; }
-    .n-97 { color: #ffffff; text-shadow: 2px 2px 0 #0051ba; }
-    .n-34 { color: #ffeb3b; text-shadow: 2px 2px 0 #000; }
-    .n-20 { color: #e60000; text-shadow: 2px 2px 0 #ffffff; }
-    .n-47 { color: #ffcc00; text-shadow: 2px 2px 0 #0044cc; }
-    .n-21 { color: #cc0000; text-shadow: 2px 2px 0 #ffcc00; }
-
-    /* PERFECTLY SCALED NAMES (GUARANTEED NO ELLIPSIS / NO CUTOFF) */
-    .name {
-      color: #ffffff;
-      font-size: min(2.8vh, 1.35vw);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.01em;
-      line-height: 1;
-      text-shadow: 1px 1px 3px #000;
-      white-space: nowrap;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* ACCESSIBILITY: RESPECT PREFERS-REDUCED-MOTION */
-    @media (prefers-reduced-motion: reduce) {
-      body::after,
-      .broadcast-scanline,
-      .nascar-bar-logo::after,
-      .animated-flag,
-      .card::before {
-        animation: none !important;
-      }
-      .card::before {
-        background: #ffb703;
-      }
-    }
-
-    /* Responsive Mobile Fallback */
-    @media (max-aspect-ratio: 1/1) {
-      body {
-        overflow: auto;
-        height: auto;
-      }
-      header {
-        flex-direction: column;
-        height: auto;
-        padding: 1vh;
-      }
-      .header-left, .header-right {
-        width: 100%;
-        justify-content: center;
-      }
-      .party-title { text-align: center; }
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto;
-        height: auto;
-      }
-      .card-header h2 { font-size: 24px; }
-      .name { font-size: 18px; }
-      .num { font-size: 24px; }
-    }
-  </style>
+  footer{
+    max-width:1200px;
+    margin:30px auto 0;
+    padding:0 24px;
+    text-align:center;
+    color:var(--chrome-dim);
+    font-family:'Share Tech Mono', monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Broadcast-style subtle sweep line -->
-  <div class="broadcast-scanline"></div>
+<div class="checker"></div>
 
-  <header>
-    <!-- Bulletproof TV NASCAR Logo Bar -->
-    <div class="header-left">
-      <div class="nascar-bar-logo">
-        <div class="bar bar-red"></div>
-        <div class="bar bar-yellow"></div>
-        <div class="bar bar-blue"></div>
-        <div class="bar bar-black">
-          <span>NASCAR</span>
-        </div>
+<header>
+  <div class="eyebrow">Pit Board · Driver Draft</div>
+  <h1>7<span>th</span> Annual Race Party</h1>
+  <div class="subhead">EACH POOL SHOWS THE DRIVERS DRAFTED · CAR NUMBER COLORED BY MANUFACTURER</div>
+</header>
+
+<main id="board"></main>
+
+<footer>Chevrolet · Ford · Toyota &nbsp;—&nbsp; headshots loaded live from Wikipedia</footer>
+
+<div class="checker"></div>
+
+<script>
+// ---- DATA -------------------------------------------------------
+// Edit this array to update pools/drivers for next year's party.
+// mfg: 'chevy' | 'ford' | 'toyota'  (controls the roundel color)
+const pools = [
+  { owner:"Pam", flags:4, drivers:[
+    {num:23, name:"Bubba Wallace", team:"23XI Racing", mfg:"toyota"},
+    {num:54, name:"Ty Gibbs", team:"Joe Gibbs Racing", mfg:"toyota"},
+    {num:2,  name:"Austin Cindric", team:"Team Penske", mfg:"ford"},
+  ]},
+  { owner:"Ron", flags:4, drivers:[
+    {num:5,  name:"Kyle Larson", team:"Hendrick Motorsports", mfg:"chevy"},
+    {num:88, name:"Connor Zilisch", team:"Trackhouse Racing", mfg:"chevy"},
+    {num:71, name:"Michael McDowell", team:"Spire Motorsports", mfg:"chevy"},
+  ]},
+  { owner:"Scott", flags:4, drivers:[
+    {num:12, name:"Ryan Blaney", team:"Team Penske", mfg:"ford"},
+    {num:17, name:"Chris Buescher", team:"RFK Racing", mfg:"ford"},
+    {num:60, name:"Ryan Preece", team:"RFK Racing", mfg:"ford"},
+  ]},
+  { owner:"Nick", flags:4, drivers:[
+    {num:45, name:"Tyler Reddick", team:"23XI Racing", mfg:"toyota"},
+    {num:6,  name:"Brad Keselowski", team:"RFK Racing", mfg:"ford"},
+    {num:4,  name:"Noah Gragson", team:"Front Row Motorsports", mfg:"ford"},
+  ]},
+  { owner:"Zach", flags:3, drivers:[
+    {num:9,  name:"Chase Elliott", team:"Hendrick Motorsports", mfg:"chevy"},
+    {num:77, name:"Carson Hocevar", team:"Spire Motorsports", mfg:"chevy"},
+    {num:67, name:"Corey Heim", team:"23XI Racing", mfg:"toyota"},
+  ]},
+  { owner:"Ace", flags:2, drivers:[
+    {num:11, name:"Denny Hamlin", team:"Joe Gibbs Racing", mfg:"toyota"},
+    {num:48, name:"Alex Bowman", team:"Hendrick Motorsports", mfg:"chevy"},
+    {num:43, name:"Erik Jones", team:"Legacy Motor Club", mfg:"toyota"},
+  ]},
+  { owner:"Nicole", flags:2, drivers:[
+    {num:24, name:"William Byron", team:"Hendrick Motorsports", mfg:"chevy"},
+    {num:1,  name:"Ross Chastain", team:"Trackhouse Racing", mfg:"chevy"},
+    {num:7,  name:"Daniel Suárez", team:"Spire Motorsports", mfg:"chevy"},
+  ]},
+  { owner:"Daniel", flags:1, drivers:[
+    {num:19, name:"Chase Briscoe", team:"Joe Gibbs Racing", mfg:"toyota"},
+    {num:3,  name:"Austin Dillon", team:"Richard Childress Racing", mfg:"chevy"},
+    {num:38, name:"Zane Smith", team:"Front Row Motorsports", mfg:"ford"},
+  ]},
+  { owner:"KO3", flags:1, drivers:[
+    {num:22, name:"Joey Logano", team:"Team Penske", mfg:"ford"},
+    {num:97, name:"Shane van Gisbergen", team:"Trackhouse Racing", mfg:"chevy"},
+    {num:34, name:"Todd Gilliland", team:"Front Row Motorsports", mfg:"ford"},
+  ]},
+  { owner:"Brenda", flags:0, drivers:[
+    {num:20, name:"Christopher Bell", team:"Joe Gibbs Racing", mfg:"toyota"},
+    {num:47, name:"Ricky Stenhouse Jr.", team:"Hyak Motorsports", mfg:"chevy"},
+    {num:21, name:"Josh Berry", team:"Wood Brothers Racing", mfg:"ford"},
+  ]},
+];
+
+const mfgColor = { chevy:"var(--chevy)", ford:"var(--ford)", toyota:"var(--toyota)" };
+
+function initials(name){
+  return name.split(" ").filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+}
+
+function flagIconSVG(){
+  return `<svg class="flag-icon" viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg">
+    <rect width="16" height="12" fill="#fff"/>
+    <g fill="#111">
+      <rect x="0" y="0" width="4" height="4"/><rect x="8" y="0" width="4" height="4"/>
+      <rect x="4" y="4" width="4" height="4"/><rect x="12" y="4" width="4" height="4"/>
+      <rect x="0" y="8" width="4" height="4"/><rect x="8" y="8" width="4" height="4"/>
+    </g>
+  </svg>`;
+}
+
+function render(){
+  const board = document.getElementById("board");
+  board.innerHTML = pools.map(pool => `
+    <section class="pool">
+      <div class="pool-head">
+        <div class="pool-name">${pool.owner}</div>
+        ${pool.flags > 0 ? `<div class="flag-badge">${flagIconSVG()}×${pool.flags}</div>` : ""}
       </div>
-    </div>
-
-    <!-- Title with gentle flags -->
-    <div class="header-right">
-      <h1 class="party-title">
-        <span class="animated-flag">🏁</span>
-        7TH ANNUAL RACE PARTY
-        <span class="animated-flag right">🏁</span>
-      </h1>
-    </div>
-  </header>
-
-  <div class="grid">
-
-    <!-- Pam -->
-    <div class="card">
-      <div class="card-header"><h2>PAM <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-23">#23</div>
-          <div class="name">WALLACE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-54">#54</div>
-          <div class="name">GIBBS</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-2">#2</div>
-          <div class="name">CINDRIC</div>
-        </div>
+      <div class="drivers">
+        ${pool.drivers.map(d => `
+          <div class="driver">
+            <div class="roundel" style="--num-color:${mfgColor[d.mfg]}">${d.num}</div>
+            <div class="headshot-wrap" data-name="${d.name}">${initials(d.name)}</div>
+            <div class="driver-info">
+              <div class="driver-name">${d.name}</div>
+              <div class="driver-team">${d.team}</div>
+            </div>
+          </div>
+        `).join("")}
       </div>
-    </div>
+    </section>
+  `).join("");
 
-    <!-- Ron -->
-    <div class="card">
-      <div class="card-header"><h2>RON <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-5">#5</div>
-          <div class="name">LARSON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-88">#88</div>
-          <div class="name">ZILISCH</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-71">#71</div>
-          <div class="name">MCDOWELL</div>
-        </div>
-      </div>
-    </div>
+  loadHeadshots();
+}
 
-    <!-- Scott -->
-    <div class="card">
-      <div class="card-header"><h2>SCOTT <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-12">#12</div>
-          <div class="name">BLANEY</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-17">#17</div>
-          <div class="name">BUESCHER</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-60">#60</div>
-          <div class="name">PREECE</div>
-        </div>
-      </div>
-    </div>
+// ---- LIVE HEADSHOT LOOKUP (Wikipedia REST API, no API key needed) ----
+const cache = {};
+async function fetchHeadshot(name){
+  if (cache[name] !== undefined) return cache[name];
+  try {
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
+    if (!res.ok) throw new Error("not found");
+    const data = await res.json();
+    const url = data.thumbnail && data.thumbnail.source ? data.thumbnail.source : null;
+    cache[name] = url;
+    return url;
+  } catch (e) {
+    cache[name] = null;
+    return null;
+  }
+}
 
-    <!-- Nick -->
-    <div class="card">
-      <div class="card-header"><h2>NICK <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-45">#45</div>
-          <div class="name">REDDICK</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-6">#6</div>
-          <div class="name">KESELOWSKI</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-4">#4</div>
-          <div class="name">GRAGSON</div>
-        </div>
-      </div>
-    </div>
+async function loadHeadshots(){
+  const wraps = document.querySelectorAll(".headshot-wrap");
+  for (const wrap of wraps) {
+    const name = wrap.dataset.name;
+    const url = await fetchHeadshot(name);
+    if (url) {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = name;
+      img.onload = () => img.classList.add("loaded");
+      wrap.textContent = "";
+      wrap.appendChild(img);
+    }
+    // if no image found, initials placeholder stays as-is
+  }
+}
 
-    <!-- Zach -->
-    <div class="card">
-      <div class="card-header"><h2>ZACH <span class="flag-info">🏁 (x3)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-9">#9</div>
-          <div class="name">ELLIOTT</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-77">#77</div>
-          <div class="name">HOCEVAR</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-67">#67</div>
-          <div class="name">HEIM</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ace -->
-    <div class="card">
-      <div class="card-header"><h2>ACE <span class="flag-info">🏁 (x2)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-11">#11</div>
-          <div class="name">HAMLIN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-48">#48</div>
-          <div class="name">BOWMAN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-43">#43</div>
-          <div class="name">JONES</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nicole -->
-    <div class="card">
-      <div class="card-header"><h2>NICOLE <span class="flag-info">🏁 (x2)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-24">#24</div>
-          <div class="name">BYRON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-1">#1</div>
-          <div class="name">CHASTAIN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-7">#7</div>
-          <div class="name">SUAREZ</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Daniel -->
-    <div class="card">
-      <div class="card-header"><h2>DANIEL <span class="flag-info">🏁</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-19">#19</div>
-          <div class="name">BRISCOE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-3">#3</div>
-          <div class="name">DILLON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-38">#38</div>
-          <div class="name">SMITH</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- KO3 -->
-    <div class="card">
-      <div class="card-header"><h2>KO3 <span class="flag-info">🏁</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-22">#22</div>
-          <div class="name">LOGANO</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-97">#97</div>
-          <div class="name">SVG</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-34">#34</div>
-          <div class="name">GILLILAND</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Brenda -->
-    <div class="card">
-      <div class="card-header"><h2>BRENDA</h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-20">#20</div>
-          <div class="name">BELL</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-47">#47</div>
-          <div class="name">STENHOUSE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-21">#21</div>
-          <div class="name">BERRY</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+render();
+</script>
 
 </body>
 </html>
