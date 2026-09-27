@@ -1,675 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7th Annual Race Party - Coke Zero Sugar 400</title>
-  <style>
-    @property --angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DANCAVE</title>
+<style>
+  :root{
+    --bg:#07090c;
+    --panel:#0f1319;
+    --line:#1c222b;
+    --ink:#eef2f6;
+    --dim:#7c8898;
+    --live:#e0393e;
+    --gold:#d9a441;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    width:100vw;height:100vh;overflow:hidden;
+    background:var(--bg);color:var(--ink);
+    font-family:'Arial Narrow',Arial,sans-serif;
+  }
+  #app{width:100vw;height:100vh;display:flex;flex-direction:column;}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  header{
+    flex:0 0 auto;
+    display:flex;align-items:baseline;justify-content:center;gap:1.2vw;
+    padding:1.1vh 0 .8vh;
+    border-bottom:2px solid var(--line);
+    background:linear-gradient(180deg,#0b0e13,#07090c);
+  }
+  header h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-weight:700;
+    font-size:5.2vh;
+    letter-spacing:.14em;
+    color:var(--ink);
+  }
+  header .sub{
+    font-size:1.7vh;
+    color:var(--gold);
+    letter-spacing:.2em;
+    align-self:center;
+  }
+  #clock{
+    position:fixed;top:1.4vh;right:2vw;
+    font-size:1.6vh;color:var(--dim);letter-spacing:.08em;
+  }
 
-    body {
-      background-color: #060709;
-      color: #ffffff;
-      font-family: 'Impact', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      padding: 0.8vh 0.8vw;
-      position: relative;
-    }
+  #grid{
+    flex:1 1 auto;
+    display:grid;
+    gap:1.1vh 1vw;
+    padding:1.3vh 1.4vw;
+    min-height:0;
+  }
 
-    /* BROADCAST BACKGROUND TEXTURE & AMBIENT LIGHT MOTION */
-    body::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: 
-        radial-gradient(ellipse at 50% 20%, rgba(230, 0, 18, 0.12) 0%, transparent 60%),
-        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 10px);
-      pointer-events: none;
-      z-index: 0;
-    }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    display:flex;flex-direction:column;
+    min-height:0;
+    position:relative;
+    overflow:hidden;
+  }
+  .card.is-live{ border-color:#3a1417; box-shadow:0 0 0 1px rgba(224,57,62,.25) inset; }
 
-    body::after {
-      content: '';
-      position: absolute;
-      top: -50vh;
-      left: -50vw;
-      width: 200vw;
-      height: 200vh;
-      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
-      animation: ambientMotion 20s ease-in-out infinite alternate;
-      pointer-events: none;
-      z-index: 0;
-    }
+  .card .status{
+    flex:0 0 auto;
+    text-align:center;
+    font-size:1.5vh;
+    padding:.6vh 0 .2vh;
+    color:var(--dim);
+    letter-spacing:.08em;
+  }
+  .card.is-live .status{ color:var(--live); font-weight:700; }
+  .card .status .dot{
+    display:inline-block;width:.9vh;height:.9vh;border-radius:50%;
+    background:var(--live);margin-right:.5vh;
+    animation:pulse 1.4s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 
-    @keyframes ambientMotion {
-      0% { transform: translate(-5%, -5%) scale(1); }
-      100% { transform: translate(5%, 5%) scale(1.05); }
-    }
+  .teams{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;min-height:0;padding:0 1vw;}
+  .team-row{display:flex;align-items:center;padding:.6vh 0;}
+  .team-row + .team-row{border-top:1px solid var(--line);}
+  .team-row img{
+    height:5.4vh;width:5.4vh;object-fit:contain;flex:0 0 auto;
+    filter:drop-shadow(0 0 4px rgba(0,0,0,.5));
+  }
+  .team-info{flex:1 1 auto;min-width:0;padding:0 1vw;}
+  .team-name{
+    font-size:2.1vh;font-weight:700;letter-spacing:.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .team-record{font-size:1.3vh;color:var(--dim);}
+  .team-score{
+    font-size:3.6vh;font-weight:700;min-width:3.2vw;text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+  .team-row.leader .team-score{color:var(--gold);}
+  .team-row.possession .team-name::after{
+    content:'●'; color:var(--live); font-size:1.1vh; margin-left:.6vh; vertical-align:middle;
+  }
 
-    /* BROADCAST ACCENT SWEEP LINE */
-    .broadcast-scanline {
-      position: absolute;
-      left: 0;
-      top: -10px;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255, 183, 3, 0) 15%, 
-        rgba(255, 255, 255, 0.85) 50%, 
-        rgba(255, 183, 3, 0) 85%, 
-        transparent 100%
-      );
-      box-shadow: 0 0 12px rgba(255, 183, 3, 0.5);
-      opacity: 0;
-      animation: broadcastSweep 13s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      pointer-events: none;
-      z-index: 99;
-    }
+  .situation{
+    flex:0 0 auto;text-align:center;font-size:1.3vh;color:var(--dim);
+    padding:.2vh 0 .7vh;letter-spacing:.04em;
+  }
 
-    @keyframes broadcastSweep {
-      0%, 82% { top: -10px; opacity: 0; }
-      84% { opacity: 0.7; }
-      93% { top: 105vh; opacity: 0.7; }
-      95%, 100% { top: 105vh; opacity: 0; }
-    }
+  #empty{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    font-size:3vh;color:var(--dim);letter-spacing:.06em;
+  }
 
-    /* HEADER */
-    header {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 10vh;
-      flex-shrink: 0;
-      background: linear-gradient(180deg, #180003 0%, #060709 100%);
-      border-bottom: 3px solid #e60012;
-      border-radius: 8px;
-      margin-bottom: 0.8vh;
-      padding: 0 1.5vw;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    }
-
-    .header-left {
-      width: 45%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100%;
-    }
-
-    /* TV-BULLETPROOF NASCAR HTML/CSS LOGO */
-    .nascar-bar-logo {
-      display: flex;
-      align-items: center;
-      height: 6.5vh;
-      transform: skewX(-15deg);
-      gap: 4px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 4px;
-      padding-right: 2px;
-    }
-
-    .nascar-bar-logo .bar {
-      height: 100%;
-      border-radius: 2px;
-    }
-
-    .nascar-bar-logo .bar-red { width: 1.2vw; background-color: #E60012; }
-    .nascar-bar-logo .bar-yellow { width: 1.2vw; background-color: #FFB703; }
-    .nascar-bar-logo .bar-blue { width: 1.2vw; background-color: #0051BA; }
-    
-    .nascar-bar-logo .bar-black {
-      background-color: #000000;
-      padding: 0 1.5vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      border: 1px solid #222;
-      border-radius: 2px;
-    }
-
-    .nascar-bar-logo .bar-black span {
-      color: #ffffff;
-      font-family: 'Impact', 'Arial Black', sans-serif;
-      font-size: min(4.5vh, 2.8vw);
-      font-style: italic;
-      font-weight: 900;
-      letter-spacing: 4px;
-      line-height: 1;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    }
-
-    /* NASCAR LOGO LIGHT SWEEP */
-    .nascar-bar-logo::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -150%;
-      width: 60%;
-      height: 200%;
-      background: linear-gradient(
-        115deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0) 35%,
-        rgba(255, 255, 255, 0.55) 50%,
-        rgba(255, 255, 255, 0) 65%,
-        transparent 100%
-      );
-      transform: rotate(15deg);
-      animation: logoSweep 10s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes logoSweep {
-      0%, 78% { left: -150%; }
-      90%, 100% { left: 200%; }
-    }
-
-    .header-right {
-      width: 55%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      height: 100%;
-    }
-
-    .party-title {
-      color: #ffb703;
-      font-size: min(4.2vh, 3vw);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px 6px #000;
-      line-height: 1;
-      text-align: right;
-      display: flex;
-      align-items: center;
-      gap: 0.5vw;
-    }
-
-    /* SUBTLE MOVING CHECKERED FLAGS */
-    .animated-flag {
-      display: inline-block;
-      animation: flagWiggle 4s ease-in-out infinite alternate;
-      transform-origin: bottom center;
-    }
-
-    .animated-flag.right {
-      animation-delay: 2s;
-    }
-
-    @keyframes flagWiggle {
-      0% { transform: rotate(-6deg); }
-      50% { transform: rotate(0deg); }
-      100% { transform: rotate(6deg); }
-    }
-
-    /* GRID LAYOUT (5 Columns x 2 Rows) */
-    .grid {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 0.5vw;
-      height: 87vh;
-      width: 100%;
-    }
-
-    /* CARD STYLING & TV FALLBACK BORDER */
-    .card {
-      position: relative;
-      background: #0b0d11;
-      border: 2px solid #ffb703;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.8);
-      transition: transform 0.3s ease;
-    }
-
-    /* Animated Gold Border Overlay */
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 8px;
-      padding: 2px;
-      background: conic-gradient(
-        from var(--angle),
-        #ffb703 0%,
-        #fff3a1 8%,
-        #ffb703 16%,
-        #3d2c00 45%,
-        #ffb703 80%,
-        #fff3a1 88%,
-        #ffb703 100%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      animation: borderRotate 12s linear infinite;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .card:nth-child(2n)::before { animation-delay: -2.5s; }
-    .card:nth-child(3n)::before { animation-delay: -5s; }
-    .card:nth-child(4n)::before { animation-delay: -7.5s; }
-    .card:nth-child(5n)::before { animation-delay: -10s; }
-
-    @keyframes borderRotate {
-      to { --angle: 360deg; }
-    }
-
-    /* PARTICIPANT HEADERS */
-    .card-header {
-      background: linear-gradient(180deg, #332600 0%, #171100 100%);
-      border-bottom: 2px solid #ffb703;
-      padding: 0.3vh 0.2vw;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 14%;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-header h2 {
-      color: #ffffff;
-      font-size: min(3.4vh, 2.1vw);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 2px 2px 4px #000;
-      white-space: nowrap;
-      width: 100%;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4vw;
-    }
-
-    .flag-info {
-      font-size: 0.7em;
-      color: #ffb703;
-      vertical-align: middle;
-    }
-
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
-      padding: 0.4vh 0.3vw;
-      gap: 0.4vh;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* DRIVER ROW OPTIMIZED TO FILL THE ENTIRE BOX */
-    .driver-row {
-      display: flex;
-      align-items: center;
-      background: #12161f;
-      border-left: 5px solid #ffb703;
-      border-radius: 5px;
-      padding: 0 0.3vw;
-      height: 31%;
-      gap: 0.3vw;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    /* NUMBERS MAXIMIZED FOR DISTANCE VIEWING */
-    .num {
-      font-style: italic;
-      font-weight: 900;
-      font-size: min(5.2vh, 2.7vw);
-      line-height: 1;
-      min-width: 1.6em;
-      text-align: center;
-      transform: skewX(-8deg);
-      flex-shrink: 0;
-    }
-
-    /* Custom Official Driver Number Colors */
-    .n-23 { color: #ffffff; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-54 { color: #99cc00; text-shadow: 2px 2px 0 #000, -1px -1px 0 #fff; }
-    .n-2  { color: #ffeb3b; text-shadow: 2px 2px 0 #000, -1px -1px 0 #e60012; }
-    .n-5  { color: #fff200; text-shadow: 2px 2px 0 #0051ba, -1px -1px 0 #000; }
-    .n-88 { color: #00e5ff; text-shadow: 2px 2px 0 #000; }
-    .n-71 { color: #ff6600; text-shadow: 2px 2px 0 #000; }
-    .n-12 { color: #ffeb3b; text-shadow: 2px 2px 0 #000, -2px -2px 0 #000; }
-    .n-17 { color: #e60012; text-shadow: 2px 2px 0 #fff, -1px -1px 0 #000; }
-    .n-60 { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-45 { color: #ffffff; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-6  { color: #0051ba; text-shadow: 2px 2px 0 #fff; }
-    .n-4  { color: #e60012; text-shadow: 2px 2px 0 #000; }
-    .n-9  { color: #ffeb3b; text-shadow: 2px 2px 0 #003399, -1px -1px 0 #000; }
-    .n-77 { color: #ff6600; text-shadow: 2px 2px 0 #fff; }
-    .n-67 { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-11 { color: #ff6600; text-shadow: 2px 2px 0 #4b0082, -1px -1px 0 #000; }
-    .n-48 { color: #e20074; text-shadow: 2px 2px 0 #00d2ff; }
-    .n-43 { color: #00aef0; text-shadow: 2px 2px 0 #ffeb3b; }
-    .n-24 { color: #ffcc00; text-shadow: 2px 2px 0 #e60012, -1px -1px 0 #000; }
-    .n-1  { color: #ffffff; text-shadow: 2px 2px 0 #e60012; }
-    .n-7  { color: #00aef0; text-shadow: 2px 2px 0 #000; }
-    .n-19 { color: #ff6600; text-shadow: 2px 2px 0 #000; }
-    .n-3  { color: #ffffff; text-shadow: 3px 3px 0 #cc0000, -1px -1px 0 #000; }
-    .n-38 { color: #ffeb3b; text-shadow: 2px 2px 0 #e60012; }
-    .n-22 { color: #ffcc00; text-shadow: 2px 2px 0 #cc0000, -1px -1px 0 #000; }
-    .n-97 { color: #ffffff; text-shadow: 2px 2px 0 #0051ba; }
-    .n-34 { color: #ffeb3b; text-shadow: 2px 2px 0 #000; }
-    .n-20 { color: #e60000; text-shadow: 2px 2px 0 #ffffff; }
-    .n-47 { color: #ffcc00; text-shadow: 2px 2px 0 #0044cc; }
-    .n-21 { color: #cc0000; text-shadow: 2px 2px 0 #ffcc00; }
-
-    /* HUGE HIGH-VISIBILITY DRIVER NAMES */
-    .name {
-      color: #ffffff;
-      font-size: min(4.5vh, 2.2vw);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      text-shadow: 2px 2px 4px #000, -1px -1px 2px #000;
-      white-space: nowrap;
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-    }
-
-    /* Tailored tight scaling for 8+ character driver names to prevent clipping */
-    .name-long {
-      font-size: min(3.8vh, 1.85vw);
-      letter-spacing: -0.04em;
-    }
-
-    /* ACCESSIBILITY: RESPECT PREFERS-REDUCED-MOTION */
-    @media (prefers-reduced-motion: reduce) {
-      body::after,
-      .broadcast-scanline,
-      .nascar-bar-logo::after,
-      .animated-flag,
-      .card::before {
-        animation: none !important;
-      }
-      .card::before {
-        background: #ffb703;
-      }
-    }
-
-    /* Responsive Mobile Fallback */
-    @media (max-aspect-ratio: 1/1) {
-      body {
-        overflow: auto;
-        height: auto;
-      }
-      header {
-        flex-direction: column;
-        height: auto;
-        padding: 1vh;
-      }
-      .header-left, .header-right {
-        width: 100%;
-        justify-content: center;
-      }
-      .party-title { text-align: center; }
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto;
-        height: auto;
-      }
-      .card-header h2 { font-size: 24px; }
-      .name { font-size: 22px; }
-      .name-long { font-size: 18px; }
-      .num { font-size: 28px; }
-    }
-  </style>
+  /* ---- full screen score overlay ---- */
+  #overlay{
+    position:fixed;inset:0;z-index:50;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    background:radial-gradient(circle at center,var(--flash,#e0393e) 0%,#07090c 78%);
+    transition:opacity .35s ease;
+  }
+  #overlay.show{opacity:1;}
+  #overlay img{
+    height:34vh;width:34vh;object-fit:contain;
+    filter:drop-shadow(0 0 30px rgba(0,0,0,.6));
+    transform:scale(.6);opacity:0;
+    animation:pop .5s cubic-bezier(.2,1.4,.4,1) forwards;
+  }
+  @keyframes pop{to{transform:scale(1);opacity:1;}}
+  #overlay .kind{
+    margin-top:3vh;font-size:6vh;font-weight:800;letter-spacing:.08em;
+    color:#fff;text-shadow:0 0 18px rgba(0,0,0,.6);
+    opacity:0;animation:rise .5s ease .2s forwards;
+  }
+  #overlay .who{
+    margin-top:1.2vh;font-size:2.4vh;letter-spacing:.15em;color:#fff9;
+    opacity:0;animation:rise .5s ease .35s forwards;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+</style>
 </head>
 <body>
+<div id="app">
+  <header><h1>DANCAVE</h1><span class="sub" id="weekLabel">NFL</span></header>
+  <div id="clock"></div>
+  <div id="grid"></div>
+  <div id="empty" style="display:none;">No games today</div>
+</div>
 
-  <!-- Broadcast-style subtle sweep line -->
-  <div class="broadcast-scanline"></div>
+<div id="overlay">
+  <img id="ovLogo" alt="">
+  <div class="kind" id="ovKind"></div>
+  <div class="who" id="ovWho"></div>
+</div>
 
-  <header>
-    <!-- Bulletproof TV NASCAR Logo Bar -->
-    <div class="header-left">
-      <div class="nascar-bar-logo">
-        <div class="bar bar-red"></div>
-        <div class="bar bar-yellow"></div>
-        <div class="bar bar-blue"></div>
-        <div class="bar bar-black">
-          <span>NASCAR</span>
-        </div>
-      </div>
-    </div>
+<script>
+const SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+const FAST_POLL = 3000;   // ms while any game is live
+const SLOW_POLL = 20000;  // ms when nothing is live
 
-    <!-- Title with gentle flags -->
-    <div class="header-right">
-      <h1 class="party-title">
-        <span class="animated-flag">🏁</span>
-        7TH ANNUAL RACE PARTY
-        <span class="animated-flag right">🏁</span>
-      </h1>
-    </div>
-  </header>
+const prevScores = {};   // gameId -> {home:n, away:n}
+const overlayQueue = [];
+let overlayBusy = false;
 
-  <div class="grid">
+function scoreKind(diff){
+  if(diff>=8) return "TOUCHDOWN + 2PT";
+  if(diff===7) return "TOUCHDOWN";
+  if(diff===6) return "TOUCHDOWN";
+  if(diff===3) return "FIELD GOAL";
+  if(diff===2) return "SAFETY";
+  if(diff===1) return "EXTRA POINT";
+  return "SCORE";
+}
 
-    <!-- Pam -->
-    <div class="card">
-      <div class="card-header"><h2>PAM <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-23">#23</div>
-          <div class="name">WALLACE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-54">#54</div>
-          <div class="name">GIBBS</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-2">#2</div>
-          <div class="name">CINDRIC</div>
-        </div>
-      </div>
-    </div>
+function queueOverlay(team, kind){
+  overlayQueue.push({team, kind});
+  runOverlayQueue();
+}
 
-    <!-- Ron -->
-    <div class="card">
-      <div class="card-header"><h2>RON <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-5">#5</div>
-          <div class="name">LARSON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-88">#88</div>
-          <div class="name">ZILISCH</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-71">#71</div>
-          <div class="name name-long">MCDOWELL</div>
-        </div>
-      </div>
-    </div>
+function runOverlayQueue(){
+  if(overlayBusy || overlayQueue.length===0) return;
+  overlayBusy = true;
+  const {team, kind} = overlayQueue.shift();
+  const ov = document.getElementById('overlay');
+  document.getElementById('ovLogo').src = team.logo;
+  document.getElementById('ovKind').textContent = kind;
+  document.getElementById('ovWho').textContent = team.displayName.toUpperCase();
+  ov.style.setProperty('--flash', team.color ? ('#'+team.color) : '#e0393e');
+  // restart animations
+  document.getElementById('ovLogo').style.animation='none';
+  document.getElementById('ovKind').style.animation='none';
+  document.getElementById('ovWho').style.animation='none';
+  void ov.offsetWidth;
+  document.getElementById('ovLogo').style.animation='';
+  document.getElementById('ovKind').style.animation='';
+  document.getElementById('ovWho').style.animation='';
+  ov.classList.add('show');
+  setTimeout(()=>{
+    ov.classList.remove('show');
+    setTimeout(()=>{ overlayBusy=false; runOverlayQueue(); }, 400);
+  }, 3200);
+}
 
-    <!-- Scott -->
-    <div class="card">
-      <div class="card-header"><h2>SCOTT <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-12">#12</div>
-          <div class="name">BLANEY</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-17">#17</div>
-          <div class="name name-long">BUESCHER</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-60">#60</div>
-          <div class="name">PREECE</div>
-        </div>
-      </div>
-    </div>
+function competitorInfo(c){
+  return {
+    id: c.team.id,
+    displayName: c.team.shortDisplayName || c.team.name,
+    abbr: c.team.abbreviation,
+    logo: c.team.logo,
+    color: c.team.color,
+    score: parseInt(c.score||'0',10),
+    record: (c.records && c.records[0]) ? c.records[0].summary : '',
+    homeAway: c.homeAway,
+    possession: false
+  };
+}
 
-    <!-- Nick -->
-    <div class="card">
-      <div class="card-header"><h2>NICK <span class="flag-info">🏁 (x4)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-45">#45</div>
-          <div class="name">REDDICK</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-6">#6</div>
-          <div class="name name-long">KESELOWSKI</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-4">#4</div>
-          <div class="name">GRAGSON</div>
-        </div>
-      </div>
-    </div>
+function layoutGrid(count){
+  const grid = document.getElementById('grid');
+  let cols;
+  if(count<=2) cols=count;
+  else if(count<=4) cols=2;
+  else if(count<=9) cols=3;
+  else if(count<=12) cols=4;
+  else cols=4;
+  const rows = Math.ceil(count/cols) || 1;
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+}
 
-    <!-- Zach -->
-    <div class="card">
-      <div class="card-header"><h2>ZACH <span class="flag-info">🏁 (x3)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-9">#9</div>
-          <div class="name">ELLIOTT</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-77">#77</div>
-          <div class="name">HOCEVAR</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-67">#67</div>
-          <div class="name">HEIM</div>
-        </div>
-      </div>
-    </div>
+async function poll(){
+  let hasLive = false;
+  try{
+    const res = await fetch(SCOREBOARD_URL, {cache:'no-store'});
+    const data = await res.json();
+    const events = data.events || [];
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
 
-    <!-- Ace -->
-    <div class="card">
-      <div class="card-header"><h2>ACE <span class="flag-info">🏁 (x2)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-11">#11</div>
-          <div class="name">HAMLIN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-48">#48</div>
-          <div class="name">BOWMAN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-43">#43</div>
-          <div class="name">JONES</div>
-        </div>
-      </div>
-    </div>
+    if(events.length===0){
+      grid.style.display='none';
+      empty.style.display='flex';
+    } else {
+      grid.style.display='grid';
+      empty.style.display='none';
+      layoutGrid(events.length);
+      grid.innerHTML='';
 
-    <!-- Nicole -->
-    <div class="card">
-      <div class="card-header"><h2>NICOLE <span class="flag-info">🏁 (x2)</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-24">#24</div>
-          <div class="name">BYRON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-1">#1</div>
-          <div class="name name-long">CHASTAIN</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-7">#7</div>
-          <div class="name">SUAREZ</div>
-        </div>
-      </div>
-    </div>
+      const wk = data.week ? `WEEK ${data.week.number}` : 'NFL';
+      document.getElementById('weekLabel').textContent = wk;
 
-    <!-- Daniel -->
-    <div class="card">
-      <div class="card-header"><h2>DANIEL <span class="flag-info">🏁</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-19">#19</div>
-          <div class="name">BRISCOE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-3">#3</div>
-          <div class="name">DILLON</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-38">#38</div>
-          <div class="name">SMITH</div>
-        </div>
-      </div>
-    </div>
+      events.forEach(ev=>{
+        const comp = ev.competitions[0];
+        const state = comp.status.type.state; // pre, in, post
+        if(state==='in') hasLive = true;
 
-    <!-- KO3 -->
-    <div class="card">
-      <div class="card-header"><h2>KO3 <span class="flag-info">🏁</span></h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-22">#22</div>
-          <div class="name">LOGANO</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-97">#97</div>
-          <div class="name">SVG</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-34">#34</div>
-          <div class="name name-long">GILLILAND</div>
-        </div>
-      </div>
-    </div>
+        let home = comp.competitors.find(c=>c.homeAway==='home');
+        let away = comp.competitors.find(c=>c.homeAway==='away');
+        home = competitorInfo(home);
+        away = competitorInfo(away);
 
-    <!-- Brenda -->
-    <div class="card">
-      <div class="card-header"><h2>BRENDA</h2></div>
-      <div class="card-body">
-        <div class="driver-row">
-          <div class="num n-20">#20</div>
-          <div class="name">BELL</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-47">#47</div>
-          <div class="name name-long">STENHOUSE</div>
-        </div>
-        <div class="driver-row">
-          <div class="num n-21">#21</div>
-          <div class="name">BERRY</div>
-        </div>
-      </div>
-    </div>
+        const situation = comp.situation;
+        if(situation && situation.possession){
+          if(situation.possession === home.id) home.possession = true;
+          if(situation.possession === away.id) away.possession = true;
+        }
 
-  </div>
+        // detect scoring changes
+        const prev = prevScores[ev.id];
+        if(prev){
+          [ [home,'home'], [away,'away'] ].forEach(([team,side])=>{
+            const before = prev[side];
+            const after = team.score;
+            if(after > before){
+              queueOverlay(team, scoreKind(after-before));
+            }
+          });
+        }
+        prevScores[ev.id] = {home:home.score, away:away.score};
 
+        const card = document.createElement('div');
+        card.className = 'card' + (state==='in' ? ' is-live' : '');
+
+        let statusText;
+        if(state==='pre'){
+          statusText = new Date(ev.date).toLocaleString('en-US',{weekday:'short',hour:'numeric',minute:'2-digit'});
+        } else if(state==='post'){
+          statusText = 'FINAL' + (comp.status.type.name==='STATUS_FINAL_OVERTIME'?'/OT':'');
+        } else {
+          statusText = `<span class="dot"></span>${comp.status.type.shortDetail}`;
+        }
+
+        const leaderHome = home.score>away.score;
+        const leaderAway = away.score>home.score;
+
+        card.innerHTML = `
+          <div class="status">${statusText}</div>
+          <div class="teams">
+            <div class="team-row ${leaderAway?'leader':''} ${away.possession?'possession':''}">
+              <img src="${away.logo}" alt="${away.abbr}">
+              <div class="team-info">
+                <div class="team-name">${away.displayName}</div>
+                <div class="team-record">${away.record}</div>
+              </div>
+              <div class="team-score">${state==='pre' ? '' : away.score}</div>
+            </div>
+            <div class="team-row ${leaderHome?'leader':''} ${home.possession?'possession':''}">
+              <img src="${home.logo}" alt="${home.abbr}">
+              <div class="team-info">
+                <div class="team-name">${home.displayName}</div>
+                <div class="team-record">${home.record}</div>
+              </div>
+              <div class="team-score">${state==='pre' ? '' : home.score}</div>
+            </div>
+          </div>
+          <div class="situation">${state==='in' && situation && situation.downDistanceText ? situation.downDistanceText : ''}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+  }catch(err){
+    console.error('scoreboard fetch failed', err);
+  }
+
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+  setTimeout(poll, hasLive ? FAST_POLL : SLOW_POLL);
+}
+
+poll();
+</script>
 </body>
 </html>
